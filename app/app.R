@@ -7,6 +7,7 @@ library(tidyr)
 library(stringi)
 library(lubridate)
 library(scales)
+options(scipen=10000)
 
 data <- read.csv("dane_maciej.csv", sep = ";")
 
@@ -108,12 +109,12 @@ server <- function(input, output) {
   })
   
   output$wykres3 <- renderPlotly({
-
+    
     data %>% 
       mutate(time = as.POSIXct(strptime(stri_sub(ts, 12, 19), "%H:%M:%S"))) %>% 
       mutate(wykonawca = master_metadata_album_artist_name) %>% 
       filter(master_metadata_album_artist_name %in% input$wykonawcy) %>% 
-      ggplot(aes(time, fill = wykonawca)) + 
+      ggplot(aes(x = time, fill = wykonawca)) + 
       geom_density(alpha = 0.5) + 
       scale_x_datetime(breaks = date_breaks("2 hours"), labels=date_format("%H:%M")) +
       theme_minimal()
