@@ -7,7 +7,6 @@ library(tidyr)
 library(stringi)
 library(lubridate)
 library(scales)
-options(scipen=10000)
 
 data <- read.csv("dane_maciej.csv", sep = ";")
 
@@ -41,7 +40,7 @@ ui <- fluidPage(
                                    summarise(n = n()) %>% 
                                    arrange(desc(n)) %>% 
                                    top_n(20) %>% 
-                                   select(Wykonawca)), selected = "Quebonafide"),
+                                   select(Wykonawca))),
            plotlyOutput("wykres2")),
     column(6, uiOutput("utwory"),
            plotlyOutput("wykres4"))
@@ -110,26 +109,80 @@ server <- function(input, output) {
   
   output$wykres3 <- renderPlotly({
     
-    data %>% 
-      mutate(time = as.POSIXct(strptime(stri_sub(ts, 12, 19), "%H:%M:%S"))) %>% 
-      mutate(wykonawca = master_metadata_album_artist_name) %>% 
-      filter(master_metadata_album_artist_name %in% input$wykonawcy) %>% 
-      ggplot(aes(x = time, fill = wykonawca)) + 
-      geom_density(alpha = 0.5) + 
-      scale_x_datetime(breaks = date_breaks("2 hours"), labels=date_format("%H:%M")) +
-      theme_minimal()
+    # data %>% 
+    #   mutate(time = as.POSIXct(strptime(stri_sub(ts, 12, 19), "%H:%M:%S"))) %>% 
+    #   mutate(wykonawca = master_metadata_album_artist_name) %>% 
+    #   filter(master_metadata_album_artist_name %in% input$wykonawcy) %>% 
+    #   ggplot(aes(x = time, fill = wykonawca)) + 
+    #   geom_density(alpha = 0.5) + 
+    #   scale_x_datetime(breaks = date_breaks("2 hours"), labels=date_format("%H:%M")) +
+    #   theme_minimal()
+    
+    godziny <- data.frame(master_metadata_album_artist_name = rep(unique(data$master_metadata_album_artist_name), each  = 24),
+                          hour = c("00", "01", "02", "03", "04", "05", "06", "07", "08",
+                                   "09", "10", "11", "12", "13", "14", "15", "16", "17",
+                                   "18", "19", "20", "21", "22", "23"))
+    x <- data %>% 
+      mutate(hour = stri_sub(ts, 12,13)) %>% 
+      group_by(master_metadata_album_artist_name, hour) %>% 
+      summarise(count = n()) %>% 
+      right_join(godziny, by = c("master_metadata_album_artist_name", "hour"))
+    x[is.na(x$count), "count"] <- 0
+
+    x %>% 
+      filter(master_metadata_album_artist_name %in% input$wykonawcy) %>%
+      mutate(Odsłuchania = count, Godzina = hour, Artysta = master_metadata_album_artist_name) %>% 
+      ggplot(aes(x = Godzina, y = Artysta, fill = Odsłuchania)) +
+      geom_tile() +
+      scale_fill_continuous(low="#000000", high="#1ED760") +
+      theme_minimal() +
+      theme(legend.position = "none") +
+      scale_y_discrete(expand = c(0,0)) +
+      labs(
+        x = "Godzina",
+        y = "Wykonawca"
+      )
+    
 
   })
   
   output$wykres4 <- renderPlotly({
     
-    data %>% 
-      mutate(time = paste(stri_sub(ts, 12, 14), "00", sep="")) %>% 
-      mutate(utwor = master_metadata_track_name) %>% 
-      filter(master_metadata_album_artist_name == input$wykonawca, utwor %in% input$utwory) %>% 
-      ggplot(aes(time, fill = utwor)) + 
-      geom_bar(position = "dodge") + 
-      theme_minimal()
+    # data %>% 
+    #   mutate(time = paste(stri_sub(ts, 12, 14), "00", sep="")) %>% 
+    #   mutate(utwor = master_metadata_track_name) %>% 
+    #   filter(master_metadata_album_artist_name == input$wykonawca, utwor %in% input$utwory) %>% 
+    #   ggplot(aes(time, fill = utwor)) + 
+    #   geom_bar(position = "dodge") + 
+    #   theme_minimal()
+    # 
+    
+    kawalki <- data %>% filter(master_metadata_album_artist_name %in% input$wykonawca)
+    godziny <- data.frame(master_metadata_track_name = rep(unique(kawalki$master_metadata_track_name), each  = 24),
+                          hour = c("00", "01", "02", "03", "04", "05", "06", "07", "08",
+                                   "09", "10", "11", "12", "13", "14", "15", "16", "17",
+                                   "18", "19", "20", "21", "22", "23"))
+    x <- data %>% 
+      mutate(hour = stri_sub(ts, 12,13)) %>% 
+      filter(master_metadata_album_artist_name %in% input$wykonawca) %>% 
+      group_by(master_metadata_track_name, hour) %>% 
+      summarise(count = n()) %>% 
+      right_join(godziny, by = c("master_metadata_track_name", "hour"))
+    x[is.na(x$count), "count"] <- 0
+    
+    x %>% 
+      filter(master_metadata_track_name %in% input$utwory) %>%
+      mutate(Odsłuchania = count, Godzina = hour, Utwór = master_metadata_track_name) %>% 
+      ggplot(aes(x = Godzina, y = Utwór, fill = Odsłuchania)) +
+      geom_tile() +
+      scale_fill_continuous(low="#000000", high="#1ED760") +
+      theme_minimal() +
+      theme(legend.position = "none") +
+      scale_y_discrete(expand = c(0,0)) +
+      labs(
+        x = "Godzina",
+        y = "Utwór"
+      )
     
   })
 
