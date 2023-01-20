@@ -12,10 +12,11 @@ data <- read.csv("dane_maciej.csv", sep = ";")
 
 ui <- fluidPage(
   
+  
   titlePanel("Analiza najczęściej wybieranych artystów i utworów"),
   
   fluidRow(
-    column(6),
+    column(6, textOutput("opis")),
     column(6, selectInput("wykonawcy", "Wybierz wykonawców",
                           unique(data %>% 
                                    mutate(Wykonawca = master_metadata_album_artist_name) %>% 
@@ -29,6 +30,16 @@ ui <- fluidPage(
   fluidRow(
     column(6, plotlyOutput("wykres1")),
     column(6, plotlyOutput("wykres3"))
+  ),
+  
+  fluidRow(
+    column(6, textOutput("opis3")),
+    column(6)
+  ),
+  
+  fluidRow(
+    column(6, textOutput("opis2")),
+    column(6)
   ),
   
   fluidRow(
@@ -46,10 +57,29 @@ ui <- fluidPage(
            plotlyOutput("wykres4"))
   )
   
-
+  
 )
 
 server <- function(input, output) {
+  
+  output$opis <- renderText({
+    
+    "Wykres po lewej stronie przedstawia 20 najczęściej słuchanych wykonawców 
+    wraz z liczbą odsłuchań. Po wyborze interesujących nas artystów po prawej stronie 
+    wyświetli się mapa ciepła prezentująca liczbę odsłuchań w zależności od godziny.
+    Dodając kolejnych artystów dostajemy możliwość porównania pory dnia, w której 
+    najczęściej słuchaliśmy wybranych wykonawców."
+    
+  })
+  
+  
+  output$opis2 <- renderText({
+    
+    "Po wybraniu wykonawcy, na wykresie po lewej stronie zobaczymy 20 najczęściej słuchanych utworów,
+    zaś po wyborze interesujących nas utworów ujrzymy mapę ciepła prezentującą liczbę odsłuchań w zależności
+    od godziny."
+    
+  })
   
   output$utwory <- renderUI({
     
@@ -59,7 +89,8 @@ server <- function(input, output) {
                        summarise(n = n()) %>% 
                        arrange(desc(n)) %>% 
                        top_n(20) %>% 
-                       select(master_metadata_track_name))
+                       mutate(Utwór = master_metadata_track_name) %>% 
+                       select(Utwór)) 
     selectInput("utwory", "Wybierz utwory", utwory, multiple = TRUE)
     
   })
@@ -109,14 +140,10 @@ server <- function(input, output) {
   
   output$wykres3 <- renderPlotly({
     
-    # data %>% 
-    #   mutate(time = as.POSIXct(strptime(stri_sub(ts, 12, 19), "%H:%M:%S"))) %>% 
-    #   mutate(wykonawca = master_metadata_album_artist_name) %>% 
-    #   filter(master_metadata_album_artist_name %in% input$wykonawcy) %>% 
-    #   ggplot(aes(x = time, fill = wykonawca)) + 
-    #   geom_density(alpha = 0.5) + 
-    #   scale_x_datetime(breaks = date_breaks("2 hours"), labels=date_format("%H:%M")) +
-    #   theme_minimal()
+
+    validate(
+      need(input$wykonawcy, "Proszę wybrać wykonawców"),
+    )
     
     godziny <- data.frame(master_metadata_album_artist_name = rep(unique(data$master_metadata_album_artist_name), each  = 24),
                           hour = c("00", "01", "02", "03", "04", "05", "06", "07", "08",
@@ -148,14 +175,9 @@ server <- function(input, output) {
   
   output$wykres4 <- renderPlotly({
     
-    # data %>% 
-    #   mutate(time = paste(stri_sub(ts, 12, 14), "00", sep="")) %>% 
-    #   mutate(utwor = master_metadata_track_name) %>% 
-    #   filter(master_metadata_album_artist_name == input$wykonawca, utwor %in% input$utwory) %>% 
-    #   ggplot(aes(time, fill = utwor)) + 
-    #   geom_bar(position = "dodge") + 
-    #   theme_minimal()
-    # 
+    validate(
+      need(input$utwory, "Proszę wybrać utwory"),
+    )
     
     kawalki <- data %>% filter(master_metadata_album_artist_name %in% input$wykonawca)
     godziny <- data.frame(master_metadata_track_name = rep(unique(kawalki$master_metadata_track_name), each  = 24),
