@@ -426,8 +426,8 @@ server <- function(input, output) {
     procent = as.integer((ile_skip[2]/ile_piosenek[1])*100)
     
     
-    valueBox(tags$p(paste(procent, "%"), style = "font-size: 175%; text-align: center; color: #FFFFFF;"),
-             tags$p(paste("piosenek skończyło się metodą ", ile_skip[1]), style = "font-size: 125%; text-align: center;color: #FFFFFF;"), 
+    valueBox(tags$p(paste0(procent, "%"), style = "font-size: 175%; text-align: center; color: #FFFFFF;"),
+             tags$p(paste0("piosenek skończyło się metodą '", ile_skip[1],"'"), style = "font-size: 125%; text-align: center;color: #FFFFFF;"), 
              #icon = icon("thumbsas-up", lib = "glyphicon"),
              color = "green")    
   })
@@ -461,7 +461,7 @@ server <- function(input, output) {
       filter(year == as.integer(rok_najwiecej[2])) %>% 
       summarise(ilosc = n())
     procent2 = as.integer((rok_najwiecej[3]/ile_piosenek_w_rok_najwiecej[1])*100)
-    valueBox(tags$p(paste(procent2, "%"), style = "font-size: 175%; text-align: center;color: #FFFFFF;"),
+    valueBox(tags$p(paste0(procent2, "%"), style = "font-size: 175%; text-align: center;color: #FFFFFF;"),
              tags$p(paste("zostało tak zakończonych w rekordowym ", rok_najwiecej[2], "roku"), style = "font-size: 125%; text-align: center;center;color: #FFFFFF;"), 
              #icon = icon("thumbs-up", lib = "glyphicon"),
              color = "green")    
