@@ -22,7 +22,7 @@ library(stringi)
 # hex niby-czarny #151515
 # szarawy #2f2f2f
 # paleta 6 kolorów - c("#EB1D36", "#CFD2CF","#FA9494", "#E38B29","#F5EDDC","#F7A76C")
-remotes::install_github("RinteRface/fullPage")
+# remotes::install_github("RinteRface/fullPage")
 theme_spoti <- shinyDashboardThemeDIY(
   appFontFamily = "Arial" # zmiana
   ,appFontColor = "#151515" # zmiana
@@ -106,11 +106,11 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,buttonTextColorHover = "#2f2f2f"
   ,buttonBorderColorHover = "#2E3440"
     
-  ,textboxBackColor = "#4C566A"
-  ,textboxBorderColor = "#2f2f2f"
+  ,textboxBackColor = "#151515"   ####
+  ,textboxBorderColor = "#151515"
   ,textboxBorderRadius = 5
-  ,textboxBackColorSelect = "#3B4252"
-  ,textboxBorderColorSelect = "#2E3440"
+  ,textboxBackColorSelect = "#151515"
+  ,textboxBorderColorSelect = "#151515"
     
   ### tables
   ,tableBackColor = "#151515"
@@ -211,21 +211,18 @@ body <- dashboardBody(
             ),
 
             fluidRow(
-              column(6, textOutput("opis3")),
-              column(6)
-            ),
-
-            fluidRow(
               column(6, textOutput("opis2")),
               column(6)
             ),
 
             fluidRow(
-              column(6,
-                     uiOutput("listaWykonawcow"),
-                     plotlyOutput("wykres2")),
-              column(6, uiOutput("utwory"),
-                     plotlyOutput("wykres4"))
+              column(6, uiOutput("listaWykonawcow")),
+              column(6, uiOutput("utwory"))
+            ),
+            
+            fluidRow(
+              column(6, plotlyOutput("wykres2")),
+              column(6, plotlyOutput("wykres4"))
             ),
             
             tags$head(
@@ -235,16 +232,15 @@ body <- dashboardBody(
                   width: 400px;
                   font-size: 12pt;
                   padding-top: 10px;
-                  color: #754199;
-                  white-space: nowrap;
+                  title: white !important;
                   }
                   .selectize-dropdown-content .active {
-                  background: #754199 !important;
+                  background: #1ED760 !important;
                   color: white !important;
                   }
                   .item {
-                  background: #754199 !important;
-                  color: white !important;
+                  background: #1ED760 !important;
+                  color: black !important;
                   }
                 "))
             ),
@@ -252,8 +248,8 @@ body <- dashboardBody(
             tags$head(
               tags$style("
                 .selectize-control .option {
-                  background-color: 754199;
-        
+                  background-color: #1ED760;
+                  text-decoration: none
                 }
                 "
               )
