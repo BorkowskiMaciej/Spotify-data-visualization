@@ -77,13 +77,11 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,sidebarTabBorderWidthHover = 0
   ,sidebarTabRadiusHover = "20px" # zaokroglenie hoverowanego
   
-  
   ,boxBackColor = "#2f2f2f" # tlo wykresu
   ,boxBorderRadius = 5
   ,boxShadowSize = "0px 0px 0px"
   ,boxShadowColor = ""
   ,boxTitleSize = 18
-  #idk co to
   ,boxDefaultColor = "#2f2f2f"
   ,boxPrimaryColor = "#2f2f2f"
   ,boxInfoColor = "#2f2f2f"
@@ -162,8 +160,8 @@ header <- dashboardHeader(title = tags$img(src = "https://storage.googleapis.com
 sidebar <- dashboardSidebar(
 
   sidebarMenu(
-    menuItem("Końce", tabName = "koniec"),
-    menuItem("Chuj mnie strzeli", tabName = "xd")
+    menuItem("Chuj mnie strzeli", tabName = "xd"),
+    menuItem("Końce", tabName = "koniec")
   )
   
 )
@@ -198,7 +196,8 @@ body <- dashboardBody(
     
     tabItem(tabName = "xd",
             fluidRow(
-              box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
+              box(title = tags$p("Analiza najczęściej wybieranych artystów i utworów", 
+                                 style = "font-size: 250%; text-align: center; color: #1DB954;"), 
                   solidHeader = TRUE, width = NULL, status = "warning")
             ),
             fluidRow(
@@ -227,7 +226,39 @@ body <- dashboardBody(
                      plotlyOutput("wykres2")),
               column(6, uiOutput("utwory"),
                      plotlyOutput("wykres4"))
+            ),
+            
+            tags$head(
+              tags$style(HTML("
+                  .selectize-input {
+                  height: 35px;
+                  width: 400px;
+                  font-size: 12pt;
+                  padding-top: 10px;
+                  color: #754199;
+                  white-space: nowrap;
+                  }
+                  .selectize-dropdown-content .active {
+                  background: #754199 !important;
+                  color: white !important;
+                  }
+                  .item {
+                  background: #754199 !important;
+                  color: white !important;
+                  }
+                "))
+            ),
+          
+            tags$head(
+              tags$style("
+                .selectize-control .option {
+                  background-color: 754199;
+        
+                }
+                "
+              )
             )
+            
             )
 
 
@@ -235,7 +266,14 @@ body <- dashboardBody(
   
   ### --------------------------------
   
-  theme_spoti
+  theme_spoti,
+  tags$head(tags$style("#opis{color: white;
+                                 font-size: 15px;
+                                 }
+                       #opis2{color: white;
+                                 font-size: 15px;
+                                 }"
+  ))
   
 )
 
@@ -245,6 +283,7 @@ ui <- dashboardPage(
   header,
   sidebar,
   body
+  
 )
 
 server <- function(input, output) {
@@ -493,6 +532,7 @@ server <- function(input, output) {
     Dodając kolejnych artystów dostajemy możliwość porównania pory dnia, w której 
     najczęściej słuchaliśmy wybranych wykonawców."
     
+
   })
   
   
@@ -515,7 +555,9 @@ server <- function(input, output) {
                        top_n(20) %>% 
                        mutate(Utwór = master_metadata_track_name) %>% 
                        select(Utwór)) 
+    
     selectInput("utwory", "Wybierz utwory", utwory, multiple = TRUE)
+    
     
   })
   
@@ -568,8 +610,27 @@ server <- function(input, output) {
         x = "Wykonawca",
         y = "Liczba odsłuchań"
       ) +
-      scale_y_continuous(expand = c(0,0))
-    
+      scale_y_continuous(expand = c(0,0)) +
+      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+      theme(
+        panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                        size = 2, linetype = "solid"),
+        plot.background = element_rect(fill = "#2f2f2f"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"),
+        title = element_text( color = "#7B63FF",
+                              size = 12),
+        axis.text.x = element_text( color = "#7B63FF",
+                                    size = 9),
+        axis.text.y = element_text( color = "#7B63FF", 
+                                    size = 9),
+        legend.background = element_rect(fill = "#2f2f2f"),
+        legend.text = element_text(face = "bold", color = "#1DB954", 
+                                   size = 10),
+
+      )
     
   })
   
@@ -591,7 +652,26 @@ server <- function(input, output) {
         x = "Utwór",
         y = "Liczba odsłuchań"
       ) +
-      scale_y_continuous(expand = c(0,0))
+      scale_y_continuous(expand = c(0,0)) +
+      theme(
+        panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                        size = 2, linetype = "solid"),
+        plot.background = element_rect(fill = "#2f2f2f"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"),
+        title = element_text( color = "#7B63FF",
+                              size = 12),
+        axis.text.x = element_text( color = "#7B63FF",
+                                    size = 9),
+        axis.text.y = element_text( color = "#7B63FF", 
+                                    size = 9),
+        legend.background = element_rect(fill = "#2f2f2f"),
+        legend.text = element_text(face = "bold", color = "#1DB954", 
+                                   size = 10)
+        
+      ) 
     
   })
   
@@ -626,7 +706,26 @@ server <- function(input, output) {
       labs(
         x = "Godzina",
         y = "Wykonawca"
-      )
+      ) +
+      theme(
+        panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                        size = 2, linetype = "solid"),
+        plot.background = element_rect(fill = "#2f2f2f"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"),
+        title = element_text( color = "#7B63FF",
+                              size = 12),
+        axis.text.x = element_text( color = "#7B63FF",
+                                    size = 9),
+        axis.text.y = element_text( color = "#7B63FF", 
+                                    size = 9),
+        legend.background = element_rect(fill = "#2f2f2f"),
+        legend.text = element_text(face = "bold", color = "#1DB954", 
+                                   size = 10)
+        
+      ) 
     
     
   })
@@ -663,7 +762,26 @@ server <- function(input, output) {
       labs(
         x = "Godzina",
         y = "Utwór"
-      )
+      ) +
+      theme(
+        panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                        size = 2, linetype = "solid"),
+        plot.background = element_rect(fill = "#2f2f2f"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"),
+        title = element_text( color = "#7B63FF",
+                              size = 12),
+        axis.text.x = element_text( color = "#7B63FF",
+                                    size = 9),
+        axis.text.y = element_text( color = "#7B63FF", 
+                                    size = 9),
+        legend.background = element_rect(fill = "#2f2f2f"),
+        legend.text = element_text(face = "bold", color = "#1DB954", 
+                                   size = 10)
+        
+      ) 
     
   })
   
