@@ -1,7 +1,6 @@
 library(dplyr)
 library(ggplot2)
 library(shiny)
-#library(tidyverse)
 library(eurostat)
 library(leaflet)
 library(sf)
@@ -161,16 +160,19 @@ header <- dashboardHeader(title = tags$img(src = "https://storage.googleapis.com
 
 
 sidebar <- dashboardSidebar(
-  
-          
+
   sidebarMenu(
     menuItem("Końce", tabName = "koniec"),
     menuItem("Chuj mnie strzeli", tabName = "xd")
   )
+  
 )
 
 body <- dashboardBody(
   tabItems(
+    
+  
+    ### --------- sekcja Michała ---------
     tabItem(tabName = "koniec",
           fluidRow(
             column(width = 8, 
@@ -192,17 +194,16 @@ body <- dashboardBody(
             
           )),
     
+    ### --------- sekcja Maćka ---------
+    
     tabItem(tabName = "xd",
             fluidRow(
+              box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
+                  solidHeader = TRUE, width = NULL, status = "warning")
+            ),
+            fluidRow(
               column(6, textOutput("opis")),
-              column(6, selectInput("wykonawcy", "Wybierz wykonawców",
-                                    unique(data %>%
-                                             mutate(Wykonawca = master_metadata_album_artist_name) %>%
-                                             group_by(Wykonawca) %>%
-                                             summarise(n = n()) %>%
-                                             arrange(desc(n)) %>%
-                                             top_n(20) %>%
-                                             select(Wykonawca)), multiple = TRUE))
+              column(6, uiOutput("listaWykonawcow2"))
             ),
 
             fluidRow(
@@ -222,14 +223,7 @@ body <- dashboardBody(
 
             fluidRow(
               column(6,
-                     selectInput("wykonawca", "Wybierz wykonawcę",
-                                 unique(data %>%
-                                          mutate(Wykonawca = master_metadata_album_artist_name) %>%
-                                          group_by(Wykonawca) %>%
-                                          summarise(n = n()) %>%
-                                          arrange(desc(n)) %>%
-                                          top_n(20) %>%
-                                          select(Wykonawca))),
+                     uiOutput("listaWykonawcow"),
                      plotlyOutput("wykres2")),
               column(6, uiOutput("utwory"),
                      plotlyOutput("wykres4"))
@@ -239,7 +233,10 @@ body <- dashboardBody(
 
     ),
   
+  ### --------------------------------
+  
   theme_spoti
+  
 )
 
 
@@ -252,11 +249,8 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
   
-  
 
-  
-  
-  ### --------------- poniżej się Michał bawi ----------------
+  ### --------------- poniżej się bawi Michał ----------------
   
   df$ts <- gsub("T", " ", df$ts)
   df$ts <- gsub("Z", "", df$ts)
@@ -513,6 +507,7 @@ server <- function(input, output) {
   output$utwory <- renderUI({
     
     utwory <- unique(data %>% 
+                       filter(username == input$user) %>% 
                        filter(master_metadata_album_artist_name == input$wykonawca) %>% 
                        group_by(master_metadata_track_name) %>% 
                        summarise(n = n()) %>% 
@@ -524,10 +519,42 @@ server <- function(input, output) {
     
   })
   
+  output$listaWykonawcow <- renderUI({
+    
+    selectInput("wykonawca", "Wybierz wykonawcę",
+                unique(data %>%
+                         filter(username == input$user) %>% 
+                         mutate(Wykonawca = master_metadata_album_artist_name) %>%
+                         group_by(Wykonawca) %>%
+                         summarise(n = n()) %>%
+                         arrange(desc(n)) %>%
+                         top_n(20) %>%
+                         select(Wykonawca)))
+    
+    
+  })
+  
+  output$listaWykonawcow2 <- renderUI({
+    
+    selectInput("wykonawcy", "Wybierz wykonawców",
+                unique(data %>%
+                         filter(username == input$user) %>% 
+                         mutate(Wykonawca = master_metadata_album_artist_name) %>%
+                         group_by(Wykonawca) %>%
+                         summarise(n = n()) %>%
+                         arrange(desc(n)) %>%
+                         top_n(20) %>%
+                         select(Wykonawca)), 
+                multiple = TRUE)
+    
+    
+  })
+  
   
   output$wykres1 <- renderPlotly({
     
     data %>% 
+      filter(username == input$user) %>% 
       group_by(master_metadata_album_artist_name) %>% 
       summarise(Odsluchania = n()) %>% 
       arrange(desc(Odsluchania)) %>% 
@@ -549,6 +576,7 @@ server <- function(input, output) {
   output$wykres2 <- renderPlotly({
     
     data %>% 
+      filter(username == input$user) %>% 
       filter(master_metadata_album_artist_name %in% input$wykonawca) %>% 
       group_by(master_metadata_track_name) %>% 
       summarise(Odsluchania = n()) %>% 
@@ -579,6 +607,7 @@ server <- function(input, output) {
                                    "09", "10", "11", "12", "13", "14", "15", "16", "17",
                                    "18", "19", "20", "21", "22", "23"))
     x <- data %>% 
+      filter(username == input$user) %>% 
       mutate(hour = stri_sub(ts, 12,13)) %>% 
       group_by(master_metadata_album_artist_name, hour) %>% 
       summarise(count = n()) %>% 
@@ -614,6 +643,7 @@ server <- function(input, output) {
                                    "09", "10", "11", "12", "13", "14", "15", "16", "17",
                                    "18", "19", "20", "21", "22", "23"))
     x <- data %>% 
+      filter(username == input$user) %>% 
       mutate(hour = stri_sub(ts, 12,13)) %>% 
       filter(master_metadata_album_artist_name %in% input$wykonawca) %>% 
       group_by(master_metadata_track_name, hour) %>% 
@@ -638,7 +668,9 @@ server <- function(input, output) {
   })
   
   
+  ### ---------------
   
   
 }
+
 shinyApp(ui, server)
