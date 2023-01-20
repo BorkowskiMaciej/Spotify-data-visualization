@@ -5,8 +5,6 @@ library(plotly)
 library(forcats)
 library(tidyr)
 library(stringi)
-library(lubridate)
-library(scales)
 
 data <- read.csv("dane_maciej.csv", sep = ";")
 
