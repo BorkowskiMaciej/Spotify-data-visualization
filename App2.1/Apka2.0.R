@@ -12,10 +12,14 @@ library(shinyWidgets)
 library(fullPage)
 library(shinydashboard)
 library(shinydashboardPlus)
+library(shinycssloaders)
 library(dashboardthemes)
 library(forcats)
 library(tidyr)
 library(stringi)
+library(showtext)
+font_add_google("Didact Gothic", "gothic")
+showtext_auto()
 # remotes::install_github("RinteRface/fullPage")
 
 theme_spoti <- shinyDashboardThemeDIY(
@@ -199,8 +203,18 @@ body <- dashboardBody(
             ),
 
             fluidRow(
-              column(6, plotlyOutput("wykres1")),
-              column(6, plotlyOutput("wykres3"))
+              column(6, 
+                     shinycssloaders::withSpinner(
+                       plotlyOutput("wykres1"),
+                       type = getOption("spinner.type", default = 6),
+                       color = getOption("spinner.color", default = "#1DB954")
+                     )),
+              column(6, 
+                     shinycssloaders::withSpinner(
+                       plotlyOutput("wykres3"),
+                       type = getOption("spinner.type", default = 6),
+                       color = getOption("spinner.color", default = "#1DB954")
+                    ))
             ),
 
             br(),
@@ -216,8 +230,16 @@ body <- dashboardBody(
             ),
             
             fluidRow(
-              column(6, plotlyOutput("wykres2")),
-              column(6, plotlyOutput("wykres4"))
+              column(6, shinycssloaders::withSpinner(
+                plotlyOutput("wykres2"),
+                type = getOption("spinner.type", default = 6),
+                color = getOption("spinner.color", default = "#1DB954")
+              )),
+              column(6, shinycssloaders::withSpinner(
+                plotlyOutput("wykres4"),
+                type = getOption("spinner.type", default = 6),
+                color = getOption("spinner.color", default = "#1DB954")
+              ))
             ),
             
             tags$head(
@@ -268,9 +290,9 @@ body <- dashboardBody(
                        #opis2{color: #BAA7C6;
                                  font-size: 15px;
                                  }"
-  ))
-  
-)
+                       )
+            )
+  )
 
 
 ui <- dashboardPage(
