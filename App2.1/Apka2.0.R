@@ -16,13 +16,8 @@ library(dashboardthemes)
 library(forcats)
 library(tidyr)
 library(stringi)
-
-# hex spotify zielony #1DB954
-# hex czarny #000000
-# hex niby-czarny #151515
-# szarawy #2f2f2f
-# paleta 6 kolorów - c("#EB1D36", "#CFD2CF","#FA9494", "#E38B29","#F5EDDC","#F7A76C")
 # remotes::install_github("RinteRface/fullPage")
+
 theme_spoti <- shinyDashboardThemeDIY(
   appFontFamily = "Arial" # zmiana
   ,appFontColor = "#BAA7C6" # zmiana
@@ -32,7 +27,7 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,warningFontColor = "#434C5E"
   ,dangerFontColor = "#434C5E"
 
-  ,bodyBackColor = "#2f2f2f" # zmiana
+  ,bodyBackColor = "#232323" # zmiana
   ,logoBackColor = "#151515" # zmiana
   
   ,headerButtonBackColor = "#151515" # kolor  na ikonce chowania
@@ -77,17 +72,17 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,sidebarTabBorderWidthHover = 0
   ,sidebarTabRadiusHover = "20px" # zaokroglenie hoverowanego
   
-  ,boxBackColor = "#2f2f2f" # tlo wykresu
+  ,boxBackColor = "#232323" # tlo wykresu
   ,boxBorderRadius = 5
   ,boxShadowSize = "0px 0px 0px"
   ,boxShadowColor = ""
   ,boxTitleSize = 18
-  ,boxDefaultColor = "#2f2f2f"
-  ,boxPrimaryColor = "#2f2f2f"
-  ,boxInfoColor = "#2f2f2f"
-  ,boxSuccessColor = "#2f2f2f"
-  ,boxWarningColor = "#2f2f2f"
-  ,boxDangerColor = "#2f2f2f"
+  ,boxDefaultColor = "#232323"
+  ,boxPrimaryColor = "#232323"
+  ,boxInfoColor = "#232323"
+  ,boxSuccessColor = "#232323"
+  ,boxWarningColor = "#232323"
+  ,boxDangerColor = "#232323"
     
   ,tabBoxTabColor = "#151515"
   ,tabBoxTabTextSize = 16
@@ -103,7 +98,7 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,buttonBorderRadius = 5
   
   ,buttonBackColorHover = "#151515"
-  ,buttonTextColorHover = "#2f2f2f"
+  ,buttonTextColorHover = "#232323"
   ,buttonBorderColorHover = "#2E3440"
     
   ,textboxBackColor = "#151515"   ####
@@ -120,6 +115,7 @@ theme_spoti <- shinyDashboardThemeDIY(
   
 )
 
+# przygotowanie danych
 df1 <- read.csv("dane_michal_1.csv")
 df2 <- read.csv("dane_michal_2.csv")
 df3 <- read.csv("dane_maciej.csv", sep = ";")
@@ -129,48 +125,46 @@ colnames(df4)[1] = "ts"
 colnames(df5)[1] = "ts"
 df <- rbind(df1, df2, df3)
 colnames(df)[1] = "ts"
-
 df <- rbind(df1, df2, df3, df4, df5)
-data <- rbind(df1, df2, df3, df4, df5)
+data <- df
 
 
-header <- dashboardHeader(title = tags$img(src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png",
+header <- dashboardHeader(
+  title = tags$img(src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png",
                                              height = 40, width = 130),
-                            
-                          leftUi = tagList(
-                            dropdownBlock(
-                              id = "uzytkownik",
-                              title = "Osoba",
-                              selectInput(
-                                inputId = "user",
-                                label = "Osoba:",
-                                choices = c(
-                                  "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
-                                  "Michał" = "21argkw6dz4lqxvriyyehsu6y",
-                                  "Kamil" = "kisielek03"
-                                ))
-                            )
-                          )
-                          
-                      )
-
+  leftUi = tagList(
+    dropdownBlock(
+      id = "uzytkownik",
+      title = "Osoba",
+      selectInput(
+        inputId = "user",
+        label = "Osoba:",
+        choices = c(
+          "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
+          "Michał" = "21argkw6dz4lqxvriyyehsu6y",
+          "Kamil" = "kisielek03"
+        )
+      )
+    )
+  )
+)
 
 
 sidebar <- dashboardSidebar(
 
   sidebarMenu(
-    menuItem("Analiza odsłuchań", tabName = "xd"),
-    menuItem("Końce", tabName = "koniec")
+    menuItem("Analiza odsłuchań", tabName = "odsłuchania"),
+    menuItem("Analiza zakończeń", tabName = "końce")
   )
   
 )
 
 body <- dashboardBody(
+  
   tabItems(
     
-  
     ### --------- sekcja Michała ---------
-    tabItem(tabName = "koniec",
+    tabItem(tabName = "końce",
           fluidRow(
             column(width = 8, 
                    box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
@@ -193,7 +187,7 @@ body <- dashboardBody(
     
     ### --------- sekcja Maćka ---------
     
-    tabItem(tabName = "xd",
+    tabItem(tabName = "odsłuchania",
             fluidRow(
               box(title = tags$p("Analiza najczęściej wybieranych artystów i utworów", 
                                  style = "font-size: 250%; text-align: center; color: #1DB954;"), 
@@ -261,7 +255,11 @@ body <- dashboardBody(
 
     ),
   
-  ### --------------------------------
+    ### --------- sekcja Kamila ---------
+  
+  
+  
+    ### ---------
   
   theme_spoti,
   tags$head(tags$style("#opis{color: #BAA7C6;
@@ -275,8 +273,8 @@ body <- dashboardBody(
 )
 
 
-
 ui <- dashboardPage(
+  
   header,
   sidebar,
   body
@@ -340,7 +338,7 @@ server <- function(input, output) {
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
                                         size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#2f2f2f"),
+        plot.background = element_rect(fill = "#232323"),
         panel.grid.major = element_line(size = 0.5, linetype = 'solid',
                                         colour = "#302f2f"), 
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
@@ -351,7 +349,7 @@ server <- function(input, output) {
                                    size = 9),
         axis.text.y = element_text( color = "#1DB954", 
                                    size = 9),
-        legend.background = element_rect(fill = "#2f2f2f"),
+        legend.background = element_rect(fill = "#232323"),
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10)
         
@@ -401,7 +399,7 @@ server <- function(input, output) {
       scale_fill_gradient(low = "#bdbbbb", high = "#1DB954") + 
       theme(
         legend.position = "none",
-        plot.background = element_rect(fill = "#2f2f2f"),
+        plot.background = element_rect(fill = "#232323"),
         plot.margin = margin(0,0,0,0,"cm")
       )
     
@@ -527,7 +525,7 @@ server <- function(input, output) {
     wraz z liczbą odsłuchań. Po wyborze interesujących nas artystów po prawej stronie 
     wyświetli się mapa ciepła prezentująca liczbę odsłuchań w zależności od godziny.
     Dodając kolejnych artystów dostajemy możliwość porównania pory dnia, w której 
-    najczęściej słuchaliśmy wybranych wykonawców."
+    najczęściej ich słuchaliśmy."
     
 
   })
@@ -590,6 +588,27 @@ server <- function(input, output) {
     
   })
   
+  temacik <- theme(
+    
+    panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                    size = 2, linetype = "solid"),
+    plot.background = element_rect(fill = "#232323"),
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                    colour = "#302f2f"), 
+    panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                    colour = "#302f2f"),
+    title = element_text( color = "#95FFB7",
+                          size = 10),
+    axis.text.x = element_text( color = "#95FFB7",
+                                size = 8),
+    axis.text.y = element_text( color = "#95FFB7", 
+                                size = 8),
+    legend.background = element_rect(fill = "#232323"),
+    legend.text = element_text(face = "bold", color = "#1DB954", 
+                               size = 10)
+    
+  )
+  
   
   output$wykres1 <- renderPlotly({
     
@@ -603,29 +622,11 @@ server <- function(input, output) {
       ggplot(aes(x = Artysta, y = Odsluchania)) +
       geom_col(fill = "#1ED760") +
       labs(
-        x = "Wykonawca",
-        y = "Liczba odsłuchań"
+        x = "WYKONAWCA",
+        y = "LICZBA ODSŁUCHAŃ"
       ) +
       scale_y_continuous(expand = c(0,0)) +
-      theme(
-        panel.background = element_rect(fill = "#151515", colour = "#000000",
-                                        size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#2f2f2f"),
-        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"), 
-        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"),
-        title = element_text( color = "#CA9FE5",
-                              size = 12),
-        axis.text.x = element_text( color = "#CA9FE5",
-                                    size = 9),
-        axis.text.y = element_text( color = "#CA9FE5", 
-                                    size = 9),
-        legend.background = element_rect(fill = "#2f2f2f"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
-                                   size = 10),
-
-      ) +
+      temacik +
       coord_flip()
 
 
@@ -646,30 +647,11 @@ server <- function(input, output) {
       geom_col(fill = "#1ED760") +
       coord_flip() +
       labs(
-        x = "Utwór",
-        y = "Liczba odsłuchań"
+        x = "UTWÓR",
+        y = "LICZBA ODSŁUCHAŃ"
       ) +
       scale_y_continuous(expand = c(0,0)) +
-      theme(
-        panel.background = element_rect(fill = "#151515", colour = "#000000",
-                                        size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#2f2f2f"),
-        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"), 
-        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"),
-        title = element_text( color = "#7B63FF",
-                              size = 12),
-        axis.text.x = element_text( color = "#7B63FF",
-                                    size = 9,
-                                    margin = margin(t = 20)),
-        axis.text.y = element_text( color = "#7B63FF", 
-                                    size = 9),
-        legend.background = element_rect(fill = "#2f2f2f"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
-                                   size = 10)
-        
-      ) 
+      temacik
     
   })
   
@@ -701,30 +683,10 @@ server <- function(input, output) {
       theme(legend.position = "none") +
       scale_y_discrete(expand = c(0,0)) +
       labs(
-        x = "Godzina",
+        x = "GODZINA",
         y = ""
       ) +
-      theme(
-        panel.background = element_rect(fill = "#151515", colour = "#000000",
-                                        size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#2f2f2f"),
-        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"), 
-        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"),
-        title = element_text( color = "#7B63FF",
-                              size = 12),
-        axis.text.x = element_text( color = "#7B63FF",
-                                    size = 9,
-                                    ),
-        axis.text.y = element_text( color = "#7B63FF", 
-                                    size = 9,
-                                    margin = margin(t = 20)),
-        legend.background = element_rect(fill = "#2f2f2f"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
-                                   size = 10)
-        
-      ) 
+      temacik
     
     
   })
@@ -758,31 +720,17 @@ server <- function(input, output) {
       theme(legend.position = "none") +
       scale_y_discrete(expand = c(0,0)) +
       labs(
-        x = "Godzina",
+        x = "GODZINA",
         y = ""
       ) +
-      theme(
-        panel.background = element_rect(fill = "#151515", colour = "#000000",
-                                        size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#2f2f2f"),
-        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"), 
-        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"),
-        title = element_text( color = "#7B63FF",
-                              size = 12),
-        axis.text.x = element_text( color = "#7B63FF",
-                                    size = 9),
-        axis.text.y = element_text( color = "#7B63FF", 
-                                    size = 9,
-                                    margin = margin(t = 20)),
-        legend.background = element_rect(fill = "#2f2f2f"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
-                                   size = 10)
-        
-      ) 
+      temacik
     
   })
+  
+  
+  
+  ### --------------- poniżej się bawi Kamil  ----------------
+  
   
   
   ### ---------------
