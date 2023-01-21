@@ -17,13 +17,10 @@ library(dashboardthemes)
 library(forcats)
 library(tidyr)
 library(stringi)
-library(showtext)
-font_add_google("Didact Gothic", "gothic")
-showtext_auto()
 # remotes::install_github("RinteRface/fullPage")
 
 theme_spoti <- shinyDashboardThemeDIY(
-  appFontFamily = "Arial" # zmiana
+  appFontFamily = "Futura" # ta czcionka przypomina trochę tą ze spotify i ma polskie znaki
   ,appFontColor = "#BAA7C6" # zmiana
   ,primaryFontColor = "#434C5E"
   ,infoFontColor = "#434C5E"
@@ -136,18 +133,22 @@ data <- df
 header <- dashboardHeader(
   title = tags$img(src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png",
                                              height = 40, width = 130),
+  titleWidth = 250,
   leftUi = tagList(
     dropdownBlock(
-      id = "uzytkownik",
+      id = "sidebarmenu",
       title = "Osoba",
-      selectInput(
+      badgeStatus = NULL,
+      sidebarMenu(id = "sidebarmenu2",
+        selectInput(
         inputId = "user",
         label = "Osoba:",
         choices = c(
           "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
           "Michał" = "21argkw6dz4lqxvriyyehsu6y",
           "Kamil" = "kisielek03"
-        )
+        ))
+      
       )
     )
   )
@@ -159,7 +160,8 @@ sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Analiza odsłuchań", tabName = "odsłuchania"),
     menuItem("Analiza zakończeń", tabName = "końce")
-  )
+  ),
+  width = 250
   
 )
 
@@ -193,7 +195,7 @@ body <- dashboardBody(
     
     tabItem(tabName = "odsłuchania",
             fluidRow(
-              box(title = tags$p("Analiza najczęściej wybieranych artystów i utworów", 
+              box(title = tags$p("Analiza najczęściej wybieranych artystów i ich utworów", 
                                  style = "font-size: 250%; text-align: center; color: #1DB954;"), 
                   solidHeader = TRUE, width = NULL, status = "warning")
             ),
@@ -268,9 +270,14 @@ body <- dashboardBody(
                   background-color: #1ED760;
                   text-decoration: none
                 }
+                .menu {
+                  background-color: black !important;
+                }
                 "
               )
-            )
+            ),
+            tags$head(tags$style(HTML('#sidebarmenu {
+                                      color: black !important}')))
             
             )
 
