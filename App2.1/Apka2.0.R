@@ -25,7 +25,7 @@ library(stringi)
 # remotes::install_github("RinteRface/fullPage")
 theme_spoti <- shinyDashboardThemeDIY(
   appFontFamily = "Arial" # zmiana
-  ,appFontColor = "#151515" # zmiana
+  ,appFontColor = "#BAA7C6" # zmiana
   ,primaryFontColor = "#434C5E"
   ,infoFontColor = "#434C5E"
   ,successFontColor = "#434C5E"
@@ -49,7 +49,7 @@ theme_spoti <- shinyDashboardThemeDIY(
   
   ,sidebarMenuBackColor = "transparent"
   ,sidebarMenuPadding = 5 # odleglosc wybranego od bokow sidebaru
-  ,sidebarMenuBorderRadius = 10
+  ,sidebarMenuBorderRadius = 5
   
   ,sidebarShadowRadius = "" 
   ,sidebarShadowColor = "0px 0px 0px"
@@ -107,10 +107,10 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,buttonBorderColorHover = "#2E3440"
     
   ,textboxBackColor = "#151515"   ####
-  ,textboxBorderColor = "#151515"
+  ,textboxBorderColor = "#1ED760"  # ramka
   ,textboxBorderRadius = 5
   ,textboxBackColorSelect = "#151515"
-  ,textboxBorderColorSelect = "#151515"
+  ,textboxBorderColorSelect = "#1ED760"
     
   ### tables
   ,tableBackColor = "#151515"
@@ -141,13 +141,12 @@ header <- dashboardHeader(title = tags$img(src = "https://storage.googleapis.com
                             dropdownBlock(
                               id = "uzytkownik",
                               title = "Osoba",
-                              #icon = icon("sliders"),
                               selectInput(
                                 inputId = "user",
                                 label = "Osoba:",
                                 choices = c(
                                   "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
-                                  "Michal" = "21argkw6dz4lqxvriyyehsu6y",
+                                  "Michał" = "21argkw6dz4lqxvriyyehsu6y",
                                   "Kamil" = "kisielek03"
                                 ))
                             )
@@ -160,7 +159,7 @@ header <- dashboardHeader(title = tags$img(src = "https://storage.googleapis.com
 sidebar <- dashboardSidebar(
 
   sidebarMenu(
-    menuItem("Chuj mnie strzeli", tabName = "xd"),
+    menuItem("Analiza odsłuchań", tabName = "xd"),
     menuItem("Końce", tabName = "koniec")
   )
   
@@ -210,11 +209,13 @@ body <- dashboardBody(
               column(6, plotlyOutput("wykres3"))
             ),
 
+            br(),
+            br(),
             fluidRow(
               column(6, textOutput("opis2")),
               column(6)
             ),
-
+            br(),
             fluidRow(
               column(6, uiOutput("listaWykonawcow")),
               column(6, uiOutput("utwory"))
@@ -263,10 +264,10 @@ body <- dashboardBody(
   ### --------------------------------
   
   theme_spoti,
-  tags$head(tags$style("#opis{color: white;
+  tags$head(tags$style("#opis{color: #BAA7C6;
                                  font-size: 15px;
                                  }
-                       #opis2{color: white;
+                       #opis2{color: #BAA7C6;
                                  font-size: 15px;
                                  }"
   ))
@@ -552,38 +553,39 @@ server <- function(input, output) {
                        mutate(Utwór = master_metadata_track_name) %>% 
                        select(Utwór)) 
     
-    selectInput("utwory", "Wybierz utwory", utwory, multiple = TRUE)
+    selectInput("utwory", "Wybierz utwory", utwory$Utwór, multiple = TRUE)
     
     
   })
   
   output$listaWykonawcow <- renderUI({
     
+    dane <- unique(data %>%
+                     filter(username == input$user) %>% 
+                     mutate(Wykonawca = master_metadata_album_artist_name) %>%
+                     group_by(Wykonawca) %>%
+                     summarise(n = n()) %>%
+                     arrange(desc(n)) %>%
+                     top_n(20) %>%
+                     select(Wykonawca))
     selectInput("wykonawca", "Wybierz wykonawcę",
-                unique(data %>%
-                         filter(username == input$user) %>% 
-                         mutate(Wykonawca = master_metadata_album_artist_name) %>%
-                         group_by(Wykonawca) %>%
-                         summarise(n = n()) %>%
-                         arrange(desc(n)) %>%
-                         top_n(20) %>%
-                         select(Wykonawca)))
+                dane$Wykonawca)
     
     
   })
   
   output$listaWykonawcow2 <- renderUI({
     
+    dane <- unique(data %>%
+                     filter(username == input$user) %>%
+                     mutate(Wykonawca = as.character(master_metadata_album_artist_name)) %>%
+                     group_by(Wykonawca) %>%
+                     summarise(n = n()) %>%
+                     arrange(desc(n)) %>%
+                     top_n(20) %>%
+                     select(Wykonawca))
     selectInput("wykonawcy", "Wybierz wykonawców",
-                unique(data %>%
-                         filter(username == input$user) %>% 
-                         mutate(Wykonawca = master_metadata_album_artist_name) %>%
-                         group_by(Wykonawca) %>%
-                         summarise(n = n()) %>%
-                         arrange(desc(n)) %>%
-                         top_n(20) %>%
-                         select(Wykonawca)), 
-                multiple = TRUE)
+                dane$Wykonawca, multiple = TRUE)
     
     
   })
@@ -600,14 +602,11 @@ server <- function(input, output) {
       mutate(Artysta = fct_rev(factor(master_metadata_album_artist_name, levels = master_metadata_album_artist_name))) %>% 
       ggplot(aes(x = Artysta, y = Odsluchania)) +
       geom_col(fill = "#1ED760") +
-      coord_flip() +
-      theme_minimal() +
       labs(
         x = "Wykonawca",
         y = "Liczba odsłuchań"
       ) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
                                         size = 2, linetype = "solid"),
@@ -616,17 +615,20 @@ server <- function(input, output) {
                                         colour = "#302f2f"), 
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
                                         colour = "#302f2f"),
-        title = element_text( color = "#7B63FF",
+        title = element_text( color = "#CA9FE5",
                               size = 12),
-        axis.text.x = element_text( color = "#7B63FF",
+        axis.text.x = element_text( color = "#CA9FE5",
                                     size = 9),
-        axis.text.y = element_text( color = "#7B63FF", 
+        axis.text.y = element_text( color = "#CA9FE5", 
                                     size = 9),
         legend.background = element_rect(fill = "#2f2f2f"),
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10),
 
-      )
+      ) +
+      coord_flip()
+
+
     
   })
   
@@ -643,7 +645,6 @@ server <- function(input, output) {
       ggplot(aes(x = Utwor, y = Odsluchania)) +
       geom_col(fill = "#1ED760") +
       coord_flip() +
-      theme_minimal() +
       labs(
         x = "Utwór",
         y = "Liczba odsłuchań"
@@ -660,7 +661,8 @@ server <- function(input, output) {
         title = element_text( color = "#7B63FF",
                               size = 12),
         axis.text.x = element_text( color = "#7B63FF",
-                                    size = 9),
+                                    size = 9,
+                                    margin = margin(t = 20)),
         axis.text.y = element_text( color = "#7B63FF", 
                                     size = 9),
         legend.background = element_rect(fill = "#2f2f2f"),
@@ -696,12 +698,11 @@ server <- function(input, output) {
       ggplot(aes(x = Godzina, y = Artysta, fill = Odsłuchania)) +
       geom_tile() +
       scale_fill_continuous(low="#000000", high="#1ED760") +
-      theme_minimal() +
       theme(legend.position = "none") +
       scale_y_discrete(expand = c(0,0)) +
       labs(
         x = "Godzina",
-        y = "Wykonawca"
+        y = ""
       ) +
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
@@ -714,9 +715,11 @@ server <- function(input, output) {
         title = element_text( color = "#7B63FF",
                               size = 12),
         axis.text.x = element_text( color = "#7B63FF",
-                                    size = 9),
+                                    size = 9,
+                                    ),
         axis.text.y = element_text( color = "#7B63FF", 
-                                    size = 9),
+                                    size = 9,
+                                    margin = margin(t = 20)),
         legend.background = element_rect(fill = "#2f2f2f"),
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10)
@@ -752,12 +755,11 @@ server <- function(input, output) {
       ggplot(aes(x = Godzina, y = Utwór, fill = Odsłuchania)) +
       geom_tile() +
       scale_fill_continuous(low="#000000", high="#1ED760") +
-      theme_minimal() +
       theme(legend.position = "none") +
       scale_y_discrete(expand = c(0,0)) +
       labs(
         x = "Godzina",
-        y = "Utwór"
+        y = ""
       ) +
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
@@ -772,7 +774,8 @@ server <- function(input, output) {
         axis.text.x = element_text( color = "#7B63FF",
                                     size = 9),
         axis.text.y = element_text( color = "#7B63FF", 
-                                    size = 9),
+                                    size = 9,
+                                    margin = margin(t = 20)),
         legend.background = element_rect(fill = "#2f2f2f"),
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10)
