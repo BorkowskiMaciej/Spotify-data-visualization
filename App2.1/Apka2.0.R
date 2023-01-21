@@ -142,7 +142,7 @@ header <- dashboardHeader(
       sidebarMenu(id = "sidebarmenu2",
         selectInput(
         inputId = "user",
-        label = "Osoba:",
+        label = "Wybierz osobę:",
         choices = c(
           "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
           "Michał" = "21argkw6dz4lqxvriyyehsu6y",
@@ -169,7 +169,8 @@ body <- dashboardBody(
   
   tabItems(
     
-    ### --------- sekcja Michała ---------
+  ### --------- sekcja Michała ---------
+  
     tabItem(tabName = "końce",
           fluidRow(
             column(width = 8, 
@@ -191,7 +192,7 @@ body <- dashboardBody(
             
           )),
     
-    ### --------- sekcja Maćka ---------
+  ### --------- sekcja Maćka ---------
     
     tabItem(tabName = "odsłuchania",
             fluidRow(
@@ -242,13 +243,38 @@ body <- dashboardBody(
                 type = getOption("spinner.type", default = 6),
                 color = getOption("spinner.color", default = "#1DB954")
               ))
-            ),
-            
-            tags$head(
-              tags$style(HTML("
+            )
+            )
+    
+  ### --------- sekcja Kamila ---------
+  
+  
+        ### tu miejsce dla ciebie Kamil
+  
+  
+  ),
+    
+  ### --------- sekcja technczna ---------
+  
+  theme_spoti,
+  tags$head(
+    tags$style("#opis{
+                  color: #BAA7C6;
+                  font-size: 15px;
+                  }
+                #opis2{
+                  color: #BAA7C6;
+                  font-size: 15px;
+                  }
+                #sidebarmenu:hover{
+                  background-color: #1DB954;
+                  color: #151515;
+                  }"
+               )
+    ),
+  tags$head(
+    tags$style(HTML("
                   .selectize-input {
-                  height: 35px;
-                  width: 400px;
                   font-size: 12pt;
                   padding-top: 10px;
                   title: white !important;
@@ -260,47 +286,35 @@ body <- dashboardBody(
                   .item {
                   background: #1ED760 !important;
                   color: black !important;
+                  border-radius: 3px;
+                  padding: 2px;
                   }
-                "))
-            ),
-          
-            tags$head(
-              tags$style("
-                .selectize-control .option {
+                  .multi {
+                  width: 450px;
+                  }
+                  .selectize-control .option {
                   background-color: #1ED760;
                   text-decoration: none
-                }
-                .menu {
-                  background-color: black !important;
-                }
+                  }
+                  .menu {
+                    background-color: black !important;
+                  }
+                  .dropdown-menu {
+                    background-color: black !important;
+                    border-color: black !important;
+                  }
+                  .full {
+                    background-color: black !important;
+                  }
                 "
-              )
-            ),
-            tags$head(tags$style(HTML('#sidebarmenu {
-                                      color: black !important}')))
-            
-            )
-
-
-    ),
-  
-    ### --------- sekcja Kamila ---------
-  
-  
-  
-    ### ---------
-  
-  theme_spoti,
-  tags$head(tags$style("#opis{color: #BAA7C6;
-                                 font-size: 15px;
-                                 }
-                       #opis2{color: #BAA7C6;
-                                 font-size: 15px;
-                                 }"
-                       )
-            )
+                    )
+               )
+    )
   )
 
+
+
+### ---------
 
 ui <- dashboardPage(
   
@@ -312,7 +326,6 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
   
-
   ### --------------- poniżej się bawi Michał ----------------
   
   df$ts <- gsub("T", " ", df$ts)
@@ -597,6 +610,7 @@ server <- function(input, output) {
                      select(Wykonawca))
     selectInput("wykonawca", "Wybierz wykonawcę",
                 dane$Wykonawca)
+    
     
     
   })
