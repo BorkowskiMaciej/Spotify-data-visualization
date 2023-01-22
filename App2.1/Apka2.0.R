@@ -27,7 +27,7 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,successFontColor = "#434C5E"
   ,warningFontColor = "#434C5E"
   ,dangerFontColor = "#434C5E"
-
+  
   ,bodyBackColor = "#232323" # zmiana
   ,logoBackColor = "#151515" # zmiana
   
@@ -51,11 +51,11 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,sidebarShadowColor = "0px 0px 0px"
   
   ,sidebarUserTextColor = "#D8DEE9"
-    
+  
   ,sidebarSearchBackColor = "#4C566A"
   ,sidebarSearchIconColor = "#151515"
   ,sidebarSearchBorderColor = "#4C566A"
-    
+  
   ,sidebarTabTextColor = "#ECEFF4"
   ,sidebarTabTextSize = 14
   ,sidebarTabBorderStyle = "none"
@@ -84,7 +84,7 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,boxSuccessColor = "#232323"
   ,boxWarningColor = "#232323"
   ,boxDangerColor = "#232323"
-    
+  
   ,tabBoxTabColor = "#151515"
   ,tabBoxTabTextSize = 16
   ,tabBoxTabTextColor = "#151515"
@@ -101,13 +101,13 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,buttonBackColorHover = "#151515"
   ,buttonTextColorHover = "#232323"
   ,buttonBorderColorHover = "#2E3440"
-    
+  
   ,textboxBackColor = "#151515"   ####
   ,textboxBorderColor = "#1ED760"  # ramka
   ,textboxBorderRadius = 5
   ,textboxBackColorSelect = "#151515"
   ,textboxBorderColorSelect = "#1ED760"
-    
+  
   ### tables
   ,tableBackColor = "#151515"
   ,tableBorderColor = "#2E3440"
@@ -115,6 +115,23 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,tableBorderRowSize = 1
   
 )
+
+jscode <- HTML("
+$(document).on('shiny:connected', function(event) {
+  $('.sidebar-toggle').on('click', function() {
+    if ($('body')[0].className != 'skin-blue sidebar-mini sidebar-collapse') {
+      $('#sidebarCollapsed').css('display', 'none')
+    } else {
+      $('#sidebarCollapsed').css('display', 'block')
+    }
+  })
+});
+")
+
+csscode <- HTML("
+.sidebar-mini.sidebar-collapse .content-wrapper {
+      margin-left: 0px !important;
+}")
 
 # przygotowanie danych
 df1 <- read.csv("dane_michal_1.csv")
@@ -132,7 +149,7 @@ data <- df
 
 header <- dashboardHeader(
   title = tags$img(src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png",
-                                             height = 40, width = 130),
+                   height = 40, width = 115),
   titleWidth = 250,
   leftUi = tagList(
     dropdownBlock(
@@ -140,15 +157,15 @@ header <- dashboardHeader(
       title = "Osoba",
       badgeStatus = NULL,
       sidebarMenu(id = "sidebarmenu2",
-        selectInput(
-        inputId = "user",
-        label = "Wybierz osobę:",
-        choices = c(
-          "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
-          "Michał" = "21argkw6dz4lqxvriyyehsu6y",
-          "Kamil" = "kisielek03"
-        ))
-      
+                  selectInput(
+                    inputId = "user",
+                    label = "Wybierz osobę:",
+                    choices = c(
+                      "Maciej" = "kkefrqwsrsyg2z394vrq46v5b",
+                      "Michał" = "21argkw6dz4lqxvriyyehsu6y",
+                      "Kamil" = "kisielek03"
+                    ))
+                  
       )
     )
   )
@@ -156,9 +173,11 @@ header <- dashboardHeader(
 
 
 sidebar <- dashboardSidebar(
-
+  tags$head(tags$script(jscode)),
+  tags$head(tags$style(csscode)),
   sidebarMenu(
     menuItem("Analiza odsłuchań", tabName = "odsłuchania"),
+    menuItem("Analiza odsłuchań pt. 2", tabName = "odsłuchania2"),
     menuItem("Analiza zakończeń", tabName = "końce")
   ),
   width = 250
@@ -169,30 +188,30 @@ body <- dashboardBody(
   
   tabItems(
     
-  ### --------- sekcja Michała ---------
-  
-    tabItem(tabName = "końce",
-          fluidRow(
-            column(width = 8, 
-                   box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
-                       solidHeader = TRUE, width = NULL, status = "warning",
-                       plotlyOutput("plotKoniec", height = 450, width = 750)
-                   ),
-                   box(
-                     title = "Mapa", status = "primary", solidHeader = FALSE, width = NULL,
-                     collapsible = TRUE, collapsed = TRUE,
-                     plotOutput("plotMapa", height =750)
-                   )
-            ),
-            column(width = 4,
-                   valueBoxOutput(width = NULL,"skippedBox"),
-                   valueBoxOutput(width = NULL,"skipped2Box"),
-                   valueBoxOutput(width = NULL,"skipped3Box")
-            )
-            
-          )),
+    ### --------- sekcja Michała ---------
     
-  ### --------- sekcja Maćka ---------
+    tabItem(tabName = "końce",
+            fluidRow(
+              column(width = 8, 
+                     box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
+                         solidHeader = TRUE, width = NULL, status = "warning",
+                         plotlyOutput("plotKoniec", height = 450, width = 750)
+                     ),
+                     box(
+                       title = "Mapa", status = "primary", solidHeader = FALSE, width = NULL,
+                       collapsible = TRUE, collapsed = TRUE,
+                       plotOutput("plotMapa", height =750)
+                     )
+              ),
+              column(width = 4,
+                     valueBoxOutput(width = NULL,"skippedBox"),
+                     valueBoxOutput(width = NULL,"skipped2Box"),
+                     valueBoxOutput(width = NULL,"skipped3Box")
+              )
+              
+            )),
+    
+    ### --------- sekcja Maćka ---------
     
     tabItem(tabName = "odsłuchania",
             fluidRow(
@@ -204,7 +223,7 @@ body <- dashboardBody(
               column(6, textOutput("opis")),
               column(6, uiOutput("listaWykonawcow2"))
             ),
-
+            
             fluidRow(
               column(6, 
                      shinycssloaders::withSpinner(
@@ -217,9 +236,9 @@ body <- dashboardBody(
                        plotlyOutput("wykres3"),
                        type = getOption("spinner.type", default = 6),
                        color = getOption("spinner.color", default = "#1DB954")
-                    ))
+                     ))
             ),
-
+            
             br(),
             br(),
             fluidRow(
@@ -244,16 +263,53 @@ body <- dashboardBody(
                 color = getOption("spinner.color", default = "#1DB954")
               ))
             )
-            )
+    ),
     
-  ### --------- sekcja Kamila ---------
-  
-  
-        ### tu miejsce dla ciebie Kamil
-  
-  
+    ### --------- sekcja Kamila ---------
+    tabItem(tabName = "odsłuchania2",
+            fluidRow(
+              box(title = tags$p("Najczęściej odtwarzane utwory", 
+                                 style = "font-size: 250%; text-align: center; color: #1DB954;"), 
+                  solidHeader = TRUE, width = NULL, status = "warning")
+            ),
+            fluidRow(
+              column(width = 12,
+                     setSliderColor(c("#1DB954","#1DB954"),c(1,2)),
+                       sliderInput("ts1","Okres:",
+                                   min = min(as.Date(substr(df$ts, 1, 10))), 
+                                   max = max(as.Date(substr(df$ts, 1, 10))),
+                                   value = c(min(as.Date(substr(df$ts, 1, 10))), max(as.Date(substr(df$ts, 1, 10)))))
+                     
+              )
+            ),
+            fluidRow(
+              column(width = 8, shinycssloaders::withSpinner(
+                     plotOutput("barPlot1"),
+                     type = getOption("spinner.type", default = 6),
+                     color = getOption("spinner.color", default = "#1DB954")
+              ))
+            ),
+            fluidRow(
+              column(width = 12,
+                       sliderInput("ts2","Dzień:",
+                                   min = min(as.Date(substr(df$ts, 1, 10))), 
+                                   max = max(as.Date(substr(df$ts, 1, 10))),
+                                   value = min(as.Date(substr(df$ts, 1, 10))))
+              )
+            ),
+            fluidRow(
+              column(width = 8, shinycssloaders::withSpinner(
+                     plotOutput("barPlot2"),
+                     type = getOption("spinner.type", default = 6),
+                     color = getOption("spinner.color", default = "#1DB954")
+              ))
+            ))
+    
+    ### tu miejsce dla ciebie Kamil
+    
+    
   ),
-    
+  
   ### --------- sekcja technczna ---------
   
   theme_spoti,
@@ -270,8 +326,8 @@ body <- dashboardBody(
                   background-color: #1DB954;
                   color: #151515;
                   }"
-               )
-    ),
+    )
+  ),
   tags$head(
     tags$style(HTML("
                   .selectize-input {
@@ -307,10 +363,10 @@ body <- dashboardBody(
                     background-color: black !important;
                   }
                 "
-                    )
-               )
+    )
     )
   )
+)
 
 
 
@@ -343,7 +399,7 @@ server <- function(input, output) {
   df$reason_end[df$reason_end == "remote"] <- "Zdalne wyłączenie"
   
   paleta_kolor_1 <- c("#EB1D36", "#CFD2CF","#FA9494", "#E38B29","#F5EDDC","#F7A76C", "#8EA7E9", 
-                               "#AACB73", "#FFEA20", "#03C988")
+                      "#AACB73", "#FFEA20", "#03C988")
   
   
   
@@ -386,11 +442,11 @@ server <- function(input, output) {
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
                                         colour = "#302f2f"),
         title = element_text( color = "#1DB954",
-                             size = 18),
+                              size = 18),
         axis.text.x = element_text( color = "#1DB954",
-                                   size = 9),
+                                    size = 9),
         axis.text.y = element_text( color = "#1DB954", 
-                                   size = 9),
+                                    size = 9),
         legend.background = element_rect(fill = "#232323"),
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10)
@@ -451,37 +507,37 @@ server <- function(input, output) {
   
   
   output$skippedBox <- renderValueBox({
-  ile_piosenek <- df %>% 
-    mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
-    filter(username == input$user) %>% 
-    summarise(ilosc = n()) 
-  
-  ile_skip <- df %>% 
-    mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
-    filter(username == input$user) %>% 
-    group_by(reason_end) %>% 
-    summarise(ilosc = n()) %>% 
-    arrange(-ilosc) %>% 
-    head(1)
-  
-  rok_najwiecej <- df %>% 
-    mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
-    filter(username == input$user) %>% 
-    group_by(reason_end,year) %>% 
-    summarise(ilosc = n()) %>% 
-    filter(reason_end == ile_skip[1]) %>% 
-    arrange(-ilosc) %>% 
-    head(1)
-  
-  ile_piosenek_w_rok_najwiecej <- df %>% 
-    mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
-    filter(username == input$user) %>% 
-    filter(year == as.integer(rok_najwiecej[2])) %>% 
-    summarise(ilosc = n())  
-  valueBox(tags$p(ile_piosenek, style = "font-size: 175%; text-align: center;color: #FFFFFF;"),
-           tags$p("piosenek przesluchanych na spotify", style = "font-size: 125%; text-align: center;color: #FFFFFF;"), 
-           #icon = icon("music", lib = "font-awesome", style = "font-size: 125%; margin-left: auto; margin-right: auto;"),
-           color = "green")    
+    ile_piosenek <- df %>% 
+      mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
+      filter(username == input$user) %>% 
+      summarise(ilosc = n()) 
+    
+    ile_skip <- df %>% 
+      mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
+      filter(username == input$user) %>% 
+      group_by(reason_end) %>% 
+      summarise(ilosc = n()) %>% 
+      arrange(-ilosc) %>% 
+      head(1)
+    
+    rok_najwiecej <- df %>% 
+      mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
+      filter(username == input$user) %>% 
+      group_by(reason_end,year) %>% 
+      summarise(ilosc = n()) %>% 
+      filter(reason_end == ile_skip[1]) %>% 
+      arrange(-ilosc) %>% 
+      head(1)
+    
+    ile_piosenek_w_rok_najwiecej <- df %>% 
+      mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
+      filter(username == input$user) %>% 
+      filter(year == as.integer(rok_najwiecej[2])) %>% 
+      summarise(ilosc = n())  
+    valueBox(tags$p(ile_piosenek, style = "font-size: 175%; text-align: center;color: #FFFFFF;"),
+             tags$p("piosenek przesluchanych na spotify", style = "font-size: 125%; text-align: center;color: #FFFFFF;"), 
+             #icon = icon("music", lib = "font-awesome", style = "font-size: 125%; margin-left: auto; margin-right: auto;"),
+             color = "green")    
   })
   output$skipped2Box <- renderValueBox({
     ile_piosenek <- df %>% 
@@ -569,7 +625,7 @@ server <- function(input, output) {
     Dodając kolejnych artystów dostajemy możliwość porównania pory dnia, w której 
     najczęściej ich słuchaliśmy."
     
-
+    
   })
   
   
@@ -671,8 +727,8 @@ server <- function(input, output) {
       scale_y_continuous(expand = c(0,0)) +
       temacik +
       coord_flip()
-
-
+    
+    
     
   })
   
@@ -770,10 +826,78 @@ server <- function(input, output) {
     
   })
   
-  
-  
   ### --------------- poniżej się bawi Kamil  ----------------
+  output$barPlot1 <- renderPlot({
+    tmp <- df
+    tmp$ts <- as.Date(substr(tmp$ts, 1, 10))
+    tmp <- tmp %>% 
+      filter(ts >= input$ts1[1], ts <= input$ts1[2], username == input$user) %>% 
+      count(master_metadata_track_name, sort = TRUE) %>% 
+      head(15)
+    colnames(tmp)[2] <- "number_of_plays"
+    ggplot(tmp, aes(x = reorder(master_metadata_track_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
+      geom_col(fill = "#1ED760") +
+      geom_text(size = 10, position = position_stack(vjust = 0.5)) +
+      labs(title = "Najczęściej słuchane utwory w wybranym okresie", x = "Tytuł utworu", y = "Liczba odtworzeń") +
+      coord_flip() +
+      theme(
+        panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                        size = 2, linetype = "solid"),
+        plot.background = element_rect(fill = "#232323"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"),
+        title = element_text( color = "#95FFB7",
+                              size = 10),
+        axis.text.x = element_text( color = "#95FFB7",
+                                    size = 13),
+        axis.text.y = element_text( color = "#95FFB7", 
+                                    size = 14),
+        legend.background = element_rect(fill = "#232323"),
+        legend.text = element_text(face = "bold", color = "#1DB954", 
+                                   size = 10),
+        plot.title = element_text(size = 22),
+        axis.title = element_text(size = 15)
+      ) +
+      scale_y_continuous(expand = c(0,0))
+  })
   
+  output$barPlot2 <- renderPlot({
+    tmp <- df
+    tmp$ts <- as.Date(substr(tmp$ts, 1, 10))
+    tmp <- tmp %>% filter(ts <= input$ts2[1], username == input$user)
+    tmp <- tmp %>%
+      count(master_metadata_track_name, sort = TRUE) %>% 
+      head(15)
+    colnames(tmp)[2] <- "number_of_plays"
+    ggplot(tmp, aes(x = reorder(master_metadata_track_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
+      geom_col(fill = "#1ED760") +
+      geom_text(size = 10, position = position_stack(vjust = 0.5)) +
+      labs(title = "Najpopularniejsze utwory do danego dnia", x = "Tytuł utworu", y = "Liczba odtworzeń") +
+      coord_flip() +
+      theme(
+        panel.background = element_rect(fill = "#151515", colour = "#000000",
+                                        size = 2, linetype = "solid"),
+        plot.background = element_rect(fill = "#232323"),
+        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"), 
+        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
+                                        colour = "#302f2f"),
+        title = element_text( color = "#95FFB7",
+                              size = 10),
+        axis.text.x = element_text( color = "#95FFB7",
+                                    size = 13),
+        axis.text.y = element_text( color = "#95FFB7", 
+                                    size = 14),
+        legend.background = element_rect(fill = "#232323"),
+        legend.text = element_text(face = "bold", color = "#1DB954", 
+                                   size = 10),
+        plot.title = element_text(size = 22),
+        axis.title = element_text(size = 15)
+      ) +
+      scale_y_continuous(expand = c(0,0))
+  })
   
   
   ### ---------------
