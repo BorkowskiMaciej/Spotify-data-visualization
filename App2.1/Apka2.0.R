@@ -195,11 +195,7 @@ body <- dashboardBody(
               column(width = 8, 
                      box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
                          solidHeader = TRUE, width = NULL, status = "warning",
-                         shinycssloaders::withSpinner(plotlyOutput("plotKoniec", height = 450, width = 750), 
-                                                      type = getOption("spinner.type", default = 6),
-                                                      color = getOption("spinner.color", default = "#1DB954")
-                                                      ),
-                         textOutput("tekstMichal")
+                         plotlyOutput("plotKoniec", height = 450, width = 750)
                      ),
                      box(
                        title = "Mapa", status = "primary", solidHeader = FALSE, width = NULL,
@@ -208,12 +204,9 @@ body <- dashboardBody(
                      )
               ),
               column(width = 4,
-                     shinycssloaders::withSpinner(valueBoxOutput(width = NULL,"skippedBox"),
-                                                  type = getOption("spinner.type", default = 6),
-                                                  color = getOption("spinner.color", default = "#1DB954")),
-                    valueBoxOutput(width = NULL,"skipped2Box"),
-                    valueBoxOutput(width = NULL,"skipped3Box"),
-                                                  )
+                     valueBoxOutput(width = NULL,"skippedBox"),
+                     valueBoxOutput(width = NULL,"skipped2Box"),
+                     valueBoxOutput(width = NULL,"skipped3Box")
               )
               
             )),
@@ -280,37 +273,46 @@ body <- dashboardBody(
                   solidHeader = TRUE, width = NULL, status = "warning")
             ),
             fluidRow(
+              column(width = 6,
+                     textOutput("text1"))
+            ),
+            br(),
+            fluidRow(
               column(width = 12,
-                     setSliderColor(c("#1DB954","#1DB954"),c(1,2)),
-                       sliderInput("ts1","Okres:",
-                                   min = min(as.Date(substr(df$ts, 1, 10))), 
-                                   max = max(as.Date(substr(df$ts, 1, 10))),
-                                   value = c(min(as.Date(substr(df$ts, 1, 10))), max(as.Date(substr(df$ts, 1, 10)))))
+                     uiOutput("slider1")
                      
               )
             ),
             fluidRow(
               column(width = 8, shinycssloaders::withSpinner(
-                     plotOutput("barPlot1"),
-                     type = getOption("spinner.type", default = 6),
-                     color = getOption("spinner.color", default = "#1DB954")
+                plotlyOutput("barPlot1"),
+                type = getOption("spinner.type", default = 6),
+                color = getOption("spinner.color", default = "#1DB954")
               ))
             ),
+            br(),
+            br(),
+            fluidRow(
+              column(width = 6,
+                     textOutput("text2"))
+            ),
+            br(),
             fluidRow(
               column(width = 12,
-                       sliderInput("ts2","Dzień:",
-                                   min = min(as.Date(substr(df$ts, 1, 10))), 
-                                   max = max(as.Date(substr(df$ts, 1, 10))),
-                                   value = min(as.Date(substr(df$ts, 1, 10))))
+                     uiOutput("slider2")
               )
             ),
             fluidRow(
               column(width = 8, shinycssloaders::withSpinner(
-                     plotOutput("barPlot2"),
-                     type = getOption("spinner.type", default = 6),
-                     color = getOption("spinner.color", default = "#1DB954")
+                plotlyOutput("barPlot2"),
+                type = getOption("spinner.type", default = 6),
+                color = getOption("spinner.color", default = "#1DB954")
               ))
             ))
+    
+    
+    
+    
     
     ### tu miejsce dla ciebie Kamil
     
@@ -402,22 +404,13 @@ server <- function(input, output) {
   df$reason_end[df$reason_end == "unexpected-exit"] <- "Wyjście z aplikacji"
   df$reason_end[df$reason_end == "unexpected-exit-while-paused"] <- "Niespodziewane zakończenie\ndziałania aplikacji"
   df$reason_end[df$reason_end == "unknown"] <- "Nieznane"
-  df$reason_end[df$reason_end == "endplay"] <- "Koniec sesji odsłuchiwania"
+  df$reason_end[df$reason_end == "endplay"] <- "Endplay???"
   df$reason_end[df$reason_end == "remote"] <- "Zdalne wyłączenie"
   
   paleta_kolor_1 <- c("#EB1D36", "#CFD2CF","#FA9494", "#E38B29","#F5EDDC","#F7A76C", "#8EA7E9", 
                       "#AACB73", "#FFEA20", "#03C988")
   
-  output$tekstMichal <- renderText({
-    
-    "
-     Powyższy wykres przedstawia w jaki sposób najczęściej kończyły się piosenki.
-     Każdy z nas ma inny sposób słuchania co możemy zaobserwować zmieniając osoby.
-     Jedni częściej pomijają piosenki szukając czegoś co pasuje do ich nastroju
-     i przewijając przed końcem, natomiast inni słuchają piosenek po kolei i do konca.
-     Warto także zwrócić uwagę, że sposób w jaki słuchamy zmienia się wraz z wiekiem."
-    
-  })
+  
   
   output$plotKoniec <- renderPlotly({
     
@@ -445,10 +438,10 @@ server <- function(input, output) {
     
     
     p2 <- p1 + 
-      ylab("Ilość zakończeń") + 
-      xlab("Rok")  +
+      ylab("Ilość zakończeń") +
+      xlab("Rok") +
       scale_color_manual(name="Powód końca", values= paleta_kolor_1) +
-      scale_x_discrete(name = "Rok" ,breaks = seq(min(temp_df$year), max(temp_df$year),1),labels = waiver(), limits = temp_df$year) + 
+      scale_x_discrete(name = "Rok" ,breaks = unique(temp_df$year),labels = waiver(), limits = unique(temp_df$year)) + 
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
                                         size = 2, linetype = "solid"),
@@ -467,7 +460,7 @@ server <- function(input, output) {
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10)
         
-      ) + xlim(c(min(temp_df$year), max(temp_df$year))) 
+      ) 
     ggplotly(p2)
   })
   
@@ -843,8 +836,48 @@ server <- function(input, output) {
   })
   
   ### --------------- poniżej się bawi Kamil  ----------------
-  output$barPlot1 <- renderPlot({
-    tmp <- df
+  
+  output$text1 <- renderText({
+    
+    "Poniższy wykres przedstawia listę 15 najpopularniejszych utworów słuchanych przez wybraną osobę w danym okresie.
+    Po wybraniu osoby i zakresu, oprócz słupków, wyświetlona jest też liczba odsłuchań danej piosenki."
+    
+  })
+  
+  output$text2 <- renderText({
+    
+    "Poniższy wykres przedstawia listę 15 najpopularniejszych albumów słuchanych przez wybraną osobę w danym okresie.
+    Po wybraniu osoby i zakresu, oprócz słupków, wyświetlona jest też zsumowana liczba odsłuchań piosenek z danych albumów."
+    
+  })
+  
+  output$slider1 <- renderUI({
+    ts <- data %>% 
+      filter(username == input$user) %>% 
+      transmute(ts = as.Date(substr(ts,1,10)))
+    fluidPage(
+    setSliderColor(c("#1DB954","#1DB954","#1DB954","#1DB954","#1DB954","#1DB954","#1DB954","#1DB954","#1DB954","#1DB954"),c(1:10)),
+    sliderInput("ts1","Okres:",
+                min = min(ts$ts), 
+                max = max(ts$ts),
+                value = c(min(ts$ts), max(ts$ts)))
+    )
+  })
+  
+  output$slider2 <- renderUI({
+    ts <- data %>% 
+      filter(username == input$user) %>% 
+      transmute(ts = as.Date(substr(ts,1,10)))
+    fluidPage(
+    sliderInput("ts2","Okres:",
+                min = min(ts$ts), 
+                max = max(ts$ts),
+                value = c(min(ts$ts), max(ts$ts)))
+    )
+  })
+  
+  output$barPlot1 <- renderPlotly({
+    tmp <- data
     tmp$ts <- as.Date(substr(tmp$ts, 1, 10))
     tmp <- tmp %>% 
       filter(ts >= input$ts1[1], ts <= input$ts1[2], username == input$user) %>% 
@@ -853,65 +886,27 @@ server <- function(input, output) {
     colnames(tmp)[2] <- "number_of_plays"
     ggplot(tmp, aes(x = reorder(master_metadata_track_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
       geom_col(fill = "#1ED760") +
-      geom_text(size = 10, position = position_stack(vjust = 0.5)) +
+      geom_text(size = 4, position = position_stack(vjust = 0.5)) +
       labs(title = "Najczęściej słuchane utwory w wybranym okresie", x = "Tytuł utworu", y = "Liczba odtworzeń") +
       coord_flip() +
-      theme(
-        panel.background = element_rect(fill = "#151515", colour = "#000000",
-                                        size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#232323"),
-        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"), 
-        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"),
-        title = element_text( color = "#95FFB7",
-                              size = 10),
-        axis.text.x = element_text( color = "#95FFB7",
-                                    size = 13),
-        axis.text.y = element_text( color = "#95FFB7", 
-                                    size = 14),
-        legend.background = element_rect(fill = "#232323"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
-                                   size = 10),
-        plot.title = element_text(size = 22),
-        axis.title = element_text(size = 15)
-      ) +
+      temacik +
       scale_y_continuous(expand = c(0,0))
   })
   
-  output$barPlot2 <- renderPlot({
-    tmp <- df
+  output$barPlot2 <- renderPlotly({
+    tmp <- data
     tmp$ts <- as.Date(substr(tmp$ts, 1, 10))
-    tmp <- tmp %>% filter(ts <= input$ts2[1], username == input$user)
-    tmp <- tmp %>%
-      count(master_metadata_track_name, sort = TRUE) %>% 
+    tmp <- tmp %>% 
+      filter(ts >= input$ts2[1], ts <= input$ts2[2], username == input$user) %>% 
+      count(master_metadata_album_album_name, sort = TRUE) %>% 
       head(15)
     colnames(tmp)[2] <- "number_of_plays"
-    ggplot(tmp, aes(x = reorder(master_metadata_track_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
+    ggplot(tmp, aes(x = reorder(master_metadata_album_album_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
       geom_col(fill = "#1ED760") +
-      geom_text(size = 10, position = position_stack(vjust = 0.5)) +
-      labs(title = "Najpopularniejsze utwory do danego dnia", x = "Tytuł utworu", y = "Liczba odtworzeń") +
+      geom_text(size = 4, position = position_stack(vjust = 0.5)) +
+      labs(title = "Najczęściej słuchane albumy w wybranym okresie", x = "Tytuł albumu", y = "Liczba odtworzeń") +
       coord_flip() +
-      theme(
-        panel.background = element_rect(fill = "#151515", colour = "#000000",
-                                        size = 2, linetype = "solid"),
-        plot.background = element_rect(fill = "#232323"),
-        panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"), 
-        panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
-                                        colour = "#302f2f"),
-        title = element_text( color = "#95FFB7",
-                              size = 10),
-        axis.text.x = element_text( color = "#95FFB7",
-                                    size = 13),
-        axis.text.y = element_text( color = "#95FFB7", 
-                                    size = 14),
-        legend.background = element_rect(fill = "#232323"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
-                                   size = 10),
-        plot.title = element_text(size = 22),
-        axis.title = element_text(size = 15)
-      ) +
+      temacik +
       scale_y_continuous(expand = c(0,0))
   })
   
