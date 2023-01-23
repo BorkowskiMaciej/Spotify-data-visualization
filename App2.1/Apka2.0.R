@@ -21,7 +21,7 @@ library(stringi)
 
 theme_spoti <- shinyDashboardThemeDIY(
   appFontFamily = "Futura" # ta czcionka przypomina trochę tą ze spotify i ma polskie znaki
-  ,appFontColor = "#BAA7C6" # zmiana
+  ,appFontColor = "#C0C0C0" # zmiana
   ,primaryFontColor = "#434C5E"
   ,infoFontColor = "#434C5E"
   ,successFontColor = "#434C5E"
@@ -149,7 +149,7 @@ data <- df
 
 header <- dashboardHeader(
   title = tags$img(src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png",
-                   height = 40, width = 115),
+                   height = 40, width = 130),
   titleWidth = 250,
   leftUi = tagList(
     dropdownBlock(
@@ -315,11 +315,11 @@ body <- dashboardBody(
   theme_spoti,
   tags$head(
     tags$style("#opis{
-                  color: #BAA7C6;
+                  color: #C0C0C0;
                   font-size: 15px;
                   }
                 #opis2{
-                  color: #BAA7C6;
+                  color: #C0C0C0;
                   font-size: 15px;
                   }
                 #sidebarmenu:hover{
