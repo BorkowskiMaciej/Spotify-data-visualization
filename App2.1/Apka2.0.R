@@ -195,7 +195,11 @@ body <- dashboardBody(
               column(width = 8, 
                      box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
                          solidHeader = TRUE, width = NULL, status = "warning",
-                         plotlyOutput("plotKoniec", height = 450, width = 750)
+                         shinycssloaders::withSpinner(plotlyOutput("plotKoniec", height = 450, width = 750), 
+                                                      type = getOption("spinner.type", default = 6),
+                                                      color = getOption("spinner.color", default = "#1DB954")
+                                                      ),
+                         textOutput("tekstMichal")
                      ),
                      box(
                        title = "Mapa", status = "primary", solidHeader = FALSE, width = NULL,
@@ -204,9 +208,12 @@ body <- dashboardBody(
                      )
               ),
               column(width = 4,
-                     valueBoxOutput(width = NULL,"skippedBox"),
-                     valueBoxOutput(width = NULL,"skipped2Box"),
-                     valueBoxOutput(width = NULL,"skipped3Box")
+                     shinycssloaders::withSpinner(valueBoxOutput(width = NULL,"skippedBox"),
+                                                  type = getOption("spinner.type", default = 6),
+                                                  color = getOption("spinner.color", default = "#1DB954")),
+                    valueBoxOutput(width = NULL,"skipped2Box"),
+                    valueBoxOutput(width = NULL,"skipped3Box"),
+                                                  )
               )
               
             )),
@@ -395,13 +402,22 @@ server <- function(input, output) {
   df$reason_end[df$reason_end == "unexpected-exit"] <- "Wyjście z aplikacji"
   df$reason_end[df$reason_end == "unexpected-exit-while-paused"] <- "Niespodziewane zakończenie\ndziałania aplikacji"
   df$reason_end[df$reason_end == "unknown"] <- "Nieznane"
-  df$reason_end[df$reason_end == "endplay"] <- "Endplay???"
+  df$reason_end[df$reason_end == "endplay"] <- "Koniec sesji odsłuchiwania"
   df$reason_end[df$reason_end == "remote"] <- "Zdalne wyłączenie"
   
   paleta_kolor_1 <- c("#EB1D36", "#CFD2CF","#FA9494", "#E38B29","#F5EDDC","#F7A76C", "#8EA7E9", 
                       "#AACB73", "#FFEA20", "#03C988")
   
-  
+  output$tekstMichal <- renderText({
+    
+    "
+     Powyższy wykres przedstawia w jaki sposób najczęściej kończyły się piosenki.
+     Każdy z nas ma inny sposób słuchania co możemy zaobserwować zmieniając osoby.
+     Jedni częściej pomijają piosenki szukając czegoś co pasuje do ich nastroju
+     i przewijając przed końcem, natomiast inni słuchają piosenek po kolei i do konca.
+     Warto także zwrócić uwagę, że sposób w jaki słuchamy zmienia się wraz z wiekiem."
+    
+  })
   
   output$plotKoniec <- renderPlotly({
     
@@ -429,10 +445,10 @@ server <- function(input, output) {
     
     
     p2 <- p1 + 
-      ylab("Ilość zakończeń") +
-      xlab("Rok") +
+      ylab("Ilość zakończeń") + 
+      xlab("Rok")  +
       scale_color_manual(name="Powód końca", values= paleta_kolor_1) +
-      scale_x_discrete(name = "Rok" ,breaks = unique(temp_df$year),labels = waiver(), limits = unique(temp_df$year)) + 
+      scale_x_discrete(name = "Rok" ,breaks = seq(min(temp_df$year), max(temp_df$year),1),labels = waiver(), limits = temp_df$year) + 
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
                                         size = 2, linetype = "solid"),
@@ -451,7 +467,7 @@ server <- function(input, output) {
         legend.text = element_text(face = "bold", color = "#1DB954", 
                                    size = 10)
         
-      ) 
+      ) + xlim(c(min(temp_df$year), max(temp_df$year))) 
     ggplotly(p2)
   })
   
