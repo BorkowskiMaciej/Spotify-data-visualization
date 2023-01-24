@@ -464,10 +464,10 @@ server <- function(input, output) {
     
     
     p2 <- p1 + 
-      ylab("Liczba zakończeń") + 
-      xlab("Rok")  +
-      scale_color_manual(name="Powód końca", values= paleta_kolor_1) +
-      scale_x_discrete(name = "Rok" ,breaks = seq(min(temp_df$year), max(temp_df$year),1),labels = waiver(), limits = temp_df$year) + 
+      ylab("LICZBA ZAKOŃCZEŃ") + 
+      xlab("ROK")  +
+      scale_color_manual(name="POWÓD KOŃCA", values= paleta_kolor_1) +
+      scale_x_discrete(name = "ROK" ,breaks = seq(min(temp_df$year), max(temp_df$year),1),labels = waiver(), limits = temp_df$year) + 
       theme(
         panel.background = element_rect(fill = "#151515", colour = "#000000",
                                         size = 2, linetype = "solid"),
@@ -476,17 +476,16 @@ server <- function(input, output) {
                                         colour = "#302f2f"), 
         panel.grid.minor = element_line(size = 0.5, linetype = 'solid',
                                         colour = "#302f2f"),
-        title = element_text( color = "#1DB954",
-                              size = 18),
-        axis.text.x = element_text( color = "#1DB954",
-                                    size = 9),
-        axis.text.y = element_text( color = "#1DB954", 
-                                    size = 9),
+        title = element_text( color = "#95FFB7",
+                              size = 10),
+        axis.text.x = element_text( color = "#95FFB7",
+                                    size = 8),
+        axis.text.y = element_text( color = "#95FFB7", 
+                                    size = 8),
         legend.background = element_rect(fill = "#232323"),
         legend.text = element_text(face = "bold", color = "#95FFB7", 
                                    size = 10)
-      ) +
-   temacik
+      )
     ggplotly(p2,tooltip="liczba")
   })
   
