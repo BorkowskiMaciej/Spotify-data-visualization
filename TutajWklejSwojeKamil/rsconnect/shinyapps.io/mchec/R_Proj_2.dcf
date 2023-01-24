@@ -1,0 +1,14 @@
+name: R_Proj_2
+title: R_Proj_2
+username:
+account: mchec
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7970815
+bundleId: 6694566
+url: https://mchec.shinyapps.io/R_Proj_2/
+when: 1672781256.42326
+lastSyncTime: 1672781256.42326
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Skrypt.R
