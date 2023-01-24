@@ -430,7 +430,7 @@ server <- function(input, output) {
      Poniższy wykres przedstawia w jaki sposób najczęściej kończyły się piosenki.
      Każdy z nas ma inny sposób słuchania co możemy zaobserwować zmieniając osoby.
      Jedni częściej pomijają piosenki szukając czegoś co pasuje do ich nastroju
-     i przewijając przed końcem, natomiast inni słuchają piosenek po kolei i do konca.
+     i przewijając przed końcem, natomiast inni słuchają piosenek po kolei i do końca.
      Warto także zwrócić uwagę, że sposób w jaki słuchamy zmienia się wraz z wiekiem."
     
   })
