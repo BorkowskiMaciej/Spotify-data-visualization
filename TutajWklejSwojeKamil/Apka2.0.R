@@ -1,3 +1,4 @@
+
 library(dplyr)
 library(ggplot2)
 library(shiny)
@@ -419,7 +420,7 @@ server <- function(input, output) {
     axis.text.y = element_text( color = "#95FFB7", 
                                 size = 8),
     legend.background = element_rect(fill = "#232323"),
-    legend.text = element_text(face = "bold", color = "#1DB954", 
+    legend.text = element_text(face = "bold", color = "#95FFB7", 
                                size = 10)
     
   )
@@ -444,26 +445,26 @@ server <- function(input, output) {
         mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
         filter(username == input$user) %>% 
         group_by(reason_end, year) %>% 
-        summarise(ilosc = n()) %>% 
-        filter(ilosc > 50)
+        summarise(liczba = n()) %>% 
+        filter(liczba > 50)
       p1 <- temp_df %>% 
-        ggplot(aes(x = year, y = ilosc, colour = reason_end)) +
+        ggplot(aes(x = year, y = liczba, colour = reason_end)) +
         geom_path() }
     else {
       temp_df <- df %>% 
         mutate(year = as.integer(format(df$ts, format = "%Y", tz = "UTC"))) %>% 
         filter(username == "21argkw6dz4lqxvriyyehsu6y") %>% 
         group_by(reason_end, year) %>% 
-        summarise(ilosc = n()) %>% 
-        filter(ilosc > 1000)
+        summarise(liczba = n()) %>% 
+        filter(liczba > 1000)
       p1 <- temp_df %>% 
-        ggplot(aes(x = year, y = ilosc, colour = reason_end)) +
+        ggplot(aes(x = year, y = liczba, colour = reason_end)) +
         geom_path()
     }
     
     
     p2 <- p1 + 
-      ylab("Ilość zakończeń") + 
+      ylab("Liczba zakończeń") + 
       xlab("Rok")  +
       scale_color_manual(name="Powód końca", values= paleta_kolor_1) +
       scale_x_discrete(name = "Rok" ,breaks = seq(min(temp_df$year), max(temp_df$year),1),labels = waiver(), limits = temp_df$year) + 
@@ -482,11 +483,11 @@ server <- function(input, output) {
         axis.text.y = element_text( color = "#1DB954", 
                                     size = 9),
         legend.background = element_rect(fill = "#232323"),
-        legend.text = element_text(face = "bold", color = "#1DB954", 
+        legend.text = element_text(face = "bold", color = "#95FFB7", 
                                    size = 10)
-      ) + xlim(c(min(temp_df$year), max(temp_df$year))) +
+      ) +
    temacik
-    ggplotly(p2,tooltip="ilosc")
+    ggplotly(p2,tooltip="liczba")
   })
   
   output$plotMapa <- renderPlot({
@@ -940,3 +941,4 @@ server <- function(input, output) {
 }
 
 shinyApp(ui, server)
+
