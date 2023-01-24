@@ -20,7 +20,7 @@ library(stringi)
 # remotes::install_github("RinteRface/fullPage")
 
 theme_spoti <- shinyDashboardThemeDIY(
-  appFontFamily = "Futura" 
+  appFontFamily = "FuturaMedium" 
   ,appFontColor = "#C0C0C0"
   ,primaryFontColor = "#434C5E"
   ,infoFontColor = "#434C5E"
@@ -306,6 +306,9 @@ body <- dashboardBody(
   ),
   
   theme_spoti,
+  tags$head(
+    includeCSS("www/style.css")
+  ),
   tags$head(
     tags$style("#opis{
                   color: #C0C0C0;
