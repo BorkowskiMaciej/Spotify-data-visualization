@@ -328,6 +328,14 @@ body <- dashboardBody(
                 #tekstMichal{
                   color: #C0C0C0;
                   font-size: 15px;
+                }
+                #text1{
+                  color: #C0C0C0;
+                  font-size: 15px;
+                }
+                #text2{
+                  color: #C0C0C0;
+                  font-size: 15px;
                   }
                 #sidebarmenu:hover{
                   background-color: #1DB954;
