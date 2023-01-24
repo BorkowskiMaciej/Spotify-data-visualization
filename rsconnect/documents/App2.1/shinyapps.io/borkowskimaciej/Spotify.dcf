@@ -5,9 +5,10 @@ account: borkowskimaciej
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8113534
-bundleId: 6768973
+bundleId: 6769878
 url: https://borkowskimaciej.shinyapps.io/Spotify/
-when: 1674574878.99365
-lastSyncTime: 1674574878.99366
+when: 1674591006.32164
+lastSyncTime: 1674591006.32166
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: www/.DS_Store
