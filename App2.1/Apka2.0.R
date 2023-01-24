@@ -731,7 +731,7 @@ server <- function(input, output) {
       geom_col(fill = "#1ED760") +
       labs(
         x = "WYKONAWCA",
-        y = "LICZBA ODSŁUCHAŃ"
+        y = "LICZBA ODTWORZEŃ"
       ) +
       scale_y_continuous(expand = c(0,0)) +
       temacik +
@@ -755,8 +755,8 @@ server <- function(input, output) {
       geom_col(fill = "#1ED760") +
       coord_flip() +
       labs(
-        x = "UTWÓR",
-        y = "LICZBA ODSŁUCHAŃ"
+        x = "TYTUŁ UTWORU",
+        y = "LICZBA ODTWORZEŃ"
       ) +
       scale_y_continuous(expand = c(0,0)) +
       temacik
@@ -887,7 +887,7 @@ server <- function(input, output) {
     ggplot(tmp, aes(x = reorder(master_metadata_track_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
       geom_col(fill = "#1ED760") +
       geom_text(size = 4, position = position_stack(vjust = 0.5)) +
-      labs(title = "Najczęściej słuchane utwory w wybranym okresie", x = "Tytuł utworu", y = "Liczba odtworzeń") +
+      labs(x = "TYTUŁ UTWORU", y = "LICZBA ODTWORZEŃ") +
       coord_flip() +
       temacik +
       scale_y_continuous(expand = c(0,0))
@@ -904,7 +904,7 @@ server <- function(input, output) {
     ggplot(tmp, aes(x = reorder(master_metadata_album_album_name, number_of_plays), y = number_of_plays, label = number_of_plays)) +
       geom_col(fill = "#1ED760") +
       geom_text(size = 4, position = position_stack(vjust = 0.5)) +
-      labs(title = "Najczęściej słuchane albumy w wybranym okresie", x = "Tytuł albumu", y = "Liczba odtworzeń") +
+      labs(x = "TYTUŁ ALBUMU", y = "LICZBA ODTWORZEŃ") +
       coord_flip() +
       temacik +
       scale_y_continuous(expand = c(0,0))
