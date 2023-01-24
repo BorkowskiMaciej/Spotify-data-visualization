@@ -1,0 +1,13 @@
+name: Spotify
+title: Spotify
+username:
+account: borkowskimaciej
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8113534
+bundleId: 6768973
+url: https://borkowskimaciej.shinyapps.io/Spotify/
+when: 1674574878.99365
+lastSyncTime: 1674574878.99366
+asMultiple: FALSE
+asStatic: FALSE
