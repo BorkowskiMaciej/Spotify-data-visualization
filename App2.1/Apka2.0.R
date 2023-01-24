@@ -193,15 +193,16 @@ body <- dashboardBody(
     
     tabItem(tabName = "końce",
             fluidRow(
+              box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
+                  solidHeader = TRUE, width = NULL, status = "warning"),
               column(width = 8, 
-                     box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
-                         solidHeader = TRUE, width = NULL, status = "warning",
+                         textOutput("tekstMichal"),
+                        br(),
                          shinycssloaders::withSpinner(plotlyOutput("plotKoniec", height = 450, width = 750), 
                                                       type = getOption("spinner.type", default = 6),
                                                       color = getOption("spinner.color", default = "#1DB954")
-                         ),
-                         textOutput("tekstMichal")
-                     )#,
+                         )
+                     #,
                      #box(
                      # title = "Mapa", status = "primary", solidHeader = FALSE, width = NULL,
                      # collapsible = TRUE, collapsed = TRUE,
@@ -222,7 +223,7 @@ body <- dashboardBody(
     
     tabItem(tabName = "odsłuchania",
             fluidRow(
-              box(title = tags$p("Analiza najczęściej wybieranych artystów i ich utworów", 
+              box(title = tags$p("Przegląd najczęściej wybieranych artystów i ich utworów", 
                                  style = "font-size: 250%; text-align: center; color: #1DB954;"), 
                   solidHeader = TRUE, width = NULL, status = "warning")
             ),
@@ -275,13 +276,20 @@ body <- dashboardBody(
     ### --------- sekcja Kamila ---------
     tabItem(tabName = "odsłuchania2",
             fluidRow(
+              box(title = tags$p("Ulubione utwory i albumy w zależności od czasu", 
+                                 style = "font-size: 250%; text-align: center; color: #1DB954;"), 
+                  solidHeader = TRUE, width = NULL, status = "warning")
+            ),
+            fluidRow(
               column(width = 7, shinycssloaders::withSpinner(
                 plotlyOutput("barPlot1"),
                 type = getOption("spinner.type", default = 6),
                 color = getOption("spinner.color", default = "#1DB954")
               )),
               column(width = 5,
+                     br(),
                      textOutput("text1"),
+                     br(),
                      uiOutput("slider1"))
             ),
             br(),
@@ -293,7 +301,9 @@ body <- dashboardBody(
                 color = getOption("spinner.color", default = "#1DB954")
               )),
               column(width = 5,
+                     br(),
                      textOutput("text2"),
+                     br(),
                      uiOutput("slider2"))
             )
     )
@@ -312,6 +322,10 @@ body <- dashboardBody(
                   font-size: 15px;
                   }
                 #opis2{
+                  color: #C0C0C0;
+                  font-size: 15px;
+                  }
+                #tekstMichal{
                   color: #C0C0C0;
                   font-size: 15px;
                   }
@@ -416,7 +430,7 @@ server <- function(input, output) {
   output$tekstMichal <- renderText({
     
     "
-     Powyższy wykres przedstawia w jaki sposób najczęściej kończyły się piosenki.
+     Poniższy wykres przedstawia w jaki sposób najczęściej kończyły się piosenki.
      Każdy z nas ma inny sposób słuchania co możemy zaobserwować zmieniając osoby.
      Jedni częściej pomijają piosenki szukając czegoś co pasuje do ich nastroju
      i przewijając przed końcem, natomiast inni słuchają piosenek po kolei i do konca.
@@ -849,14 +863,14 @@ server <- function(input, output) {
   ### --------------- poniżej się bawi Kamil  ----------------
   output$text1 <- renderText({
     
-    "Wykres po lewej przedstawia listę 15 najpopularniejszych utworów słuchanych przez wybraną osobę w danym okresie.
+    "Wykres po lewej stronie przedstawia listę 15 najpopularniejszych utworów słuchanych przez wybraną osobę w danym okresie.
     Po wybraniu osoby i zakresu, oprócz słupków, wyświetlona jest też liczba odsłuchań danej piosenki."
     
   })
   
   output$text2 <- renderText({
     
-    "Wykres po lewej przedstawia listę 15 najpopularniejszych albumów słuchanych przez wybraną osobę w danym okresie.
+    "Wykres po lewej stronie przedstawia listę 15 najpopularniejszych albumów słuchanych przez wybraną osobę w danym okresie.
     Po wybraniu osoby i zakresu, oprócz słupków, wyświetlona jest też zsumowana liczba odsłuchań piosenek z danych albumów."
     
   })
@@ -896,7 +910,7 @@ server <- function(input, output) {
       mutate(Utwór = reorder(master_metadata_track_name, n), Liczba_odtworzeń = n)
     ggplot(tmp, aes(x = Utwór, y = Liczba_odtworzeń)) +
       geom_col(fill = "#1ED760") +
-      labs(title = "Najczęściej słuchane utwory w wybranym okresie", x = "Tytuł utworu", y = "Liczba odtworzeń") +
+      labs(x = "TYTUŁ UTWORU", y = "LICZBA ODTWORZEŃ") +
       coord_flip() +
       temacik +
       scale_y_continuous(expand = c(0,0))
@@ -913,7 +927,7 @@ server <- function(input, output) {
     colnames(tmp)[2] <- "number_of_plays"
     ggplot(tmp, aes(x = Album, y = Liczba_odtworzeń)) +
       geom_col(fill = "#1ED760") +
-      labs(title = "Najczęściej słuchane albumy w wybranym okresie", x = "Tytuł albumu", y = "Liczba odtworzeń") +
+      labs(x = "TYTUŁ ALBUMU", y = "LICZBA ODTWORZEŃ") +
       coord_flip() +
       temacik +
       scale_y_continuous(expand = c(0,0))
