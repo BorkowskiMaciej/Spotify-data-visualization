@@ -150,7 +150,7 @@ data <- df
 
 header <- dashboardHeader(
   title = tags$img(src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png",
-                   height = 40, width = 130),
+                   height = 40, width = 120),
   titleWidth = 250,
   leftUi = tagList(
     dropdownBlock(
@@ -177,8 +177,8 @@ sidebar <- dashboardSidebar(
   tags$head(tags$script(jscode)),
   tags$head(tags$style(csscode)),
   sidebarMenu(
-    menuItem("Analiza odsłuchań", tabName = "odsłuchania"),
-    menuItem("Analiza czasowa", tabName = "odsłuchania2"),
+    menuItem("Kogo i kiedy najczęściej słuchamy", tabName = "odsłuchania"),
+    menuItem("Zmiany preferencji", tabName = "odsłuchania2"),
     menuItem("Analiza zakończeń", tabName = "końce")
   ),
   width = 250
@@ -196,12 +196,12 @@ body <- dashboardBody(
               box(title = tags$p("Jak kończą się piosenki?", style = "font-size: 250%; text-align: center; color: #1DB954;"), 
                   solidHeader = TRUE, width = NULL, status = "warning"),
               column(width = 8, 
-                         textOutput("tekstMichal"),
-                        br(),
-                         shinycssloaders::withSpinner(plotlyOutput("plotKoniec", height = 450, width = 750), 
-                                                      type = getOption("spinner.type", default = 6),
-                                                      color = getOption("spinner.color", default = "#1DB954")
-                         )
+                     textOutput("tekstMichal"),
+                     br(),
+                     shinycssloaders::withSpinner(plotlyOutput("plotKoniec", height = 450, width = 750), 
+                                                  type = getOption("spinner.type", default = 6),
+                                                  color = getOption("spinner.color", default = "#1DB954")
+                     )
                      #,
                      #box(
                      # title = "Mapa", status = "primary", solidHeader = FALSE, width = NULL,
@@ -281,6 +281,9 @@ body <- dashboardBody(
                   solidHeader = TRUE, width = NULL, status = "warning")
             ),
             fluidRow(
+              column(6, textOutput("text3"))
+            ),
+            fluidRow(
               column(width = 7, shinycssloaders::withSpinner(
                 plotlyOutput("barPlot1"),
                 type = getOption("spinner.type", default = 6),
@@ -307,11 +310,11 @@ body <- dashboardBody(
                      uiOutput("slider2"))
             )
     )
-            
-            ### tu miejsce dla ciebie Kamil
-            
-            
-    ),
+    
+    ### tu miejsce dla ciebie Kamil
+    
+    
+  ),
   
   ### --------- sekcja technczna ---------
   
@@ -872,15 +875,23 @@ server <- function(input, output) {
   output$text1 <- renderText({
     
     "Wykres po lewej stronie przedstawia listę 15 najpopularniejszych utworów słuchanych przez wybraną osobę w danym okresie.
-    Po wybraniu osoby i zakresu, oprócz słupków, wyświetlona jest też liczba odsłuchań danej piosenki."
+    Najeżdzając na poszczególne kolumny wykresu jesteśmy w stanie odczytać liczbę odtworzeń danego utworu."
     
   })
   
   output$text2 <- renderText({
     
     "Wykres po lewej stronie przedstawia listę 15 najpopularniejszych albumów słuchanych przez wybraną osobę w danym okresie.
-    Po wybraniu osoby i zakresu, oprócz słupków, wyświetlona jest też zsumowana liczba odsłuchań piosenek z danych albumów."
+    Najeżdzając na poszczególne kolumny wykresu jesteśmy w stanie odczytać liczbę odtworzeń utworów z danego albumu."
     
+  })
+  
+  output$text3 <- renderText({
+    "Oba poniższe wykersy dotyczą preferencji muzycznych danego członka zespołu w wybranym okresie.
+    Po analizie obu wykresów dla każdego z nas, można dojść do wniosku,
+    że wszyscy słuchamy przede wszystkim polskiej muzyki hip-hopowej,
+    niejednokrotnie można zauważyć powtarzające się utwory i albumy na wykresach
+    preferencji różnych członków zespołu."
   })
   
   output$slider1 <- renderUI({
