@@ -17,7 +17,6 @@ library(dashboardthemes)
 library(forcats)
 library(tidyr)
 library(stringi)
-# remotes::install_github("RinteRface/fullPage")
 
 theme_spoti <- shinyDashboardThemeDIY(
   appFontFamily = "FuturaMedium" 
@@ -31,13 +30,13 @@ theme_spoti <- shinyDashboardThemeDIY(
   ,bodyBackColor = "#232323" 
   ,logoBackColor = "#151515" 
   
-  ,headerButtonBackColor = "#151515" # kolor  na ikonce chowania
-  ,headerButtonIconColor = "#D8DEE9" # kolor pasków na ikonce chowania sidebaru
-  ,headerButtonBackColorHover = "#1DB954" # hover ikonki chowania
-  ,headerButtonIconColorHover = "#151515" # kolor paskow podczas hovera
-  ,headerBackColor = "#151515" # header
-  ,headerBoxShadowColor = "" #cien pod headerem - nie zmieniac
-  ,headerBoxShadowSize = "0px 0px 0px"  # nie zmieniac
+  ,headerButtonBackColor = "#151515" 
+  ,headerButtonIconColor = "#D8DEE9" 
+  ,headerButtonBackColorHover = "#1DB954" 
+  ,headerButtonIconColorHover = "#151515" 
+  ,headerBackColor = "#151515"
+  ,headerBoxShadowColor = "" 
+  ,headerBoxShadowSize = "0px 0px 0px" 
   
   
   ,sidebarBackColor = "#151515"
@@ -132,11 +131,11 @@ csscode <- HTML("
       margin-left: 0px !important;
 }")
 
-df1 <- read.csv("dane_michal_1.csv")
-df2 <- read.csv("dane_michal_2.csv")
-df3 <- read.csv("dane_maciej.csv", sep = ";")
-df4 <- read.csv("kisiel_0.csv")
-df5 <- read.csv("kisiel_1.csv")
+df1 <- read.csv("data/dane_michal_1.csv")
+df2 <- read.csv("data/dane_michal_2.csv")
+df3 <- read.csv("data/dane_maciej.csv", sep = ";")
+df4 <- read.csv("data/kisiel_0.csv")
+df5 <- read.csv("data/kisiel_1.csv")
 colnames(df4)[1] = "ts"
 colnames(df5)[1] = "ts"
 df <- rbind(df1, df2, df3)
